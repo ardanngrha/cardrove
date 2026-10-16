@@ -25,10 +25,10 @@ Revocation blocks new requests. Files already downloaded cannot be recalled. Exi
 Use your saved permanent access code. If both the code and every device session are lost, the installation owner can recover through their Supabase dashboard:
 
 ```sh
-node scripts/create-connect-token.mjs --recover
+npm run setup:cloud -- --app-url https://YOUR_APP.pages.dev --recover
 ```
 
-Review and run the generated SQL, then connect using its setup code. This disconnects every existing device, invalidates the old permanent code, and asks you to save a new one. Decks and study progress are preserved. Keep the generated setup files private.
+Replace the example URL with your installed app address. Review and run `work/setup/setup.sql` in the project's SQL Editor, then open the private link in `work/setup/setup-link.txt`. This disconnects every existing device, invalidates the old permanent code, and asks you to save a new one. Decks and study progress are preserved. Keep the generated setup files private; never run this command just to connect an additional device.
 
 ## Save and replace your access code
 
@@ -41,6 +41,12 @@ To rotate a code, open **Your workspace** in Settings, expand **Replace access c
 On iPhone or iPad, open Cardrove in Safari, tap **Share**, then **Add to Home Screen**. Enable **Open as Web App** if offered and tap **Add**. On Android, open Chrome's menu and choose **Install app** or **Add to Home screen**. Settings contains these instructions and an install button when the browser offers one.
 
 The app uses the C icon and opens in standalone mode on supported browsers. HTTPS is required outside localhost. Study still requires a connection, and the service worker does not cache private cards, session responses, or media. An installed app may have separate browser storage; use your saved access code if it asks you to connect again.
+
+### If the iPhone icon looks wrong
+
+Install from your own app address, rather than the public handbook. The app and website both declare a PNG version of the C icon for iOS, and the app also provides Safari's standard root icon file. iOS may retain an icon that was saved before an update. First make sure you have your saved access code, remove the old Home Screen shortcut, reopen the current app URL in Safari, reload it, then add it again. Choose to remove only the shortcut if iOS offers that distinction; installation and browser storage behaviour vary. A separate installed session may need your saved access code.
+
+If the image is still different, check whether iOS is applying a tinted or other customised Home Screen appearance. The website supplies the icon artwork; the operating system controls its final presentation. Updating these files does not guarantee that an existing installed icon refreshes immediately.
 
 ## Rename or reset a workspace
 

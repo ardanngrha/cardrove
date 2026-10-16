@@ -25,14 +25,14 @@ The app is independent of Anki. Deck licences and attribution remain with their 
 
 ## Import limits
 
-| Item | Application limit |
-| --- | --- |
-| APKG file | 512 MB |
-| Extracted collection database | 256 MiB |
-| Cards per file | 100,000 |
-| Unique media objects per file | 10,000 |
-| One cloud media object | 50 MB |
-| Estimated cloud media usage | 900 MB |
+| Item                          | Application limit |
+| ----------------------------- | ----------------- |
+| APKG file                     | 512 MB            |
+| Extracted collection database | 256 MiB           |
+| Cards per file                | 100,000           |
+| Unique media objects per file | 10,000            |
+| One cloud media object        | 50 MB             |
+| Estimated cloud media usage   | 900 MB            |
 
 These are validation ceilings, not a promise that every device can import a file that size. Parsing and decompression need browser memory. Large decks can fail earlier on a phone. Prefer importing a smaller deck on a computer first.
 

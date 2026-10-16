@@ -6,6 +6,16 @@ Import a supported `.apkg`, recall the answer, and let FSRS schedule your next r
 
 [Website & handbook](https://ardanngrha.github.io/cardrove/) · [Self-hosting](https://ardanngrha.github.io/cardrove/docs/self-host/) · [Compatibility](https://ardanngrha.github.io/cardrove/docs/compatibility/)
 
+## A look inside
+
+[![Watch the 40-second Cardrove feature tour](site/public/media/cardrove-tour-poster.webp)](https://ardanngrha.github.io/cardrove/media/cardrove-tour.mp4)
+
+**[Watch the feature film](https://ardanngrha.github.io/cardrove/#feature-tour)** · [MP4](https://ardanngrha.github.io/cardrove/media/cardrove-tour.mp4) · [Transcript](https://ardanngrha.github.io/cardrove/#feature-tour)
+
+A silent tour of importing decks, reviewing, keyboard ratings, mobile layout, and workspace controls. It uses original sample cards. The editable Remotion source and local rendering instructions live in [video/](video/). The poster above opens the video; GitHub README does not need a custom video player.
+
+## The workspace
+
 ![Cardrove study workspace](docs/assets/app-desktop.png)
 
 <details>
@@ -24,6 +34,7 @@ Screenshots use disposable, original sample content. Personal decks are not incl
 - FSRS review scheduling, daily new-card allowances, undo, note editing, search, and progress history.
 - A cloud mode with device pairing, private media, resumable imports, and full collection backups.
 - A local Node.js server with SQLite when you prefer to run everything yourself.
+- First-owner setup, reusable private access codes, workspace names, progress reset, and Home Screen installation on supported browsers.
 
 Each installation is for **one owner**. Connected devices share that owner’s entire collection and progress. This is not a shared public learning service or a multi-user classroom.
 

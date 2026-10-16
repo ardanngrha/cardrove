@@ -154,3 +154,23 @@ Ten automated tests pass, including two new CLI tests for a private setup link w
 Design Read remains the calm editorial workspace in DESIGN.md: ENERGY 2 / RHYTHM 2 / MOTION 2. The new disclosure uses the existing index rule and typography to provide first-owner guidance without competing with the device connection action. No decoration or extra animation was introduced. The existing anti-slop gate remains applicable; the added copy describes implemented behaviour and the disclosure has a functional destination.
 
 The follow-up media migration copies objects through the supported Storage API, verifies every original filename, size and MIME type, and compares the bytes of an audio and an image sample. A database guard refuses activation while a source object is missing or mismatched. Bucket selection, import completeness checks, quota accounting and Storage policies now follow the workspace bucket setting. The migration preserves collection rows and study history. Administrative migration tooling uses the authenticated Supabase CLI and keeps the retrieved server credential in memory only.
+
+## Feature film and publication update
+
+The editable film uses the official Remotion bundler and renderer Node APIs. The rendered H.264 file is 40 seconds, 1920 × 1080, 30 fps, silent, and 1,533,678 bytes. Every captured workspace uses original disposable sample notes and the sample collection is identified in the film. No owner code, private deck, or production session appears in the captures.
+
+The landing page uses a native video element with controls, inline playback, captions, a poster, and a complete text transcript. It has no autoplay and requests `preload="none"`. React and Remotion remain authoring dependencies; the configured app's main JavaScript output remains 386.59 KB (119 KB gzip). This measures transfer bytes, not memory usage. The poster is approximately 32 KB; the movie is downloaded when playback is requested, subject to browser behaviour.
+
+Browser checks played the film through to its 40-second end, opened the transcript by keyboard, and blocked the movie request to verify the visible failure message, MP4 link, and usable transcript. Phone layout metrics matched content width at 320 and 390 CSS pixels. The existing interactive recall sample and handbook remain available below the hero. Ten automated tests and the app type check passed. Configured cloud and eight-page site builds passed. The handbook now describes current first-owner setup, code recovery, keyboard ratings, top-level audio, cloud connectivity, and backup limits.
+
+Both the application and public website explicitly link the same versioned, opaque RGB 180 × 180 C icon and provide a root Apple touch-icon fallback. Existing installed shortcuts can retain their previous icon. Physical iOS installation and operating-system icon tinting have not been verified here; the handbook explains saving the access code before removing and adding a shortcut again.
+
+### Anti-slop gate for this scope
+
+- Hard gate PASS: real app captures are labelled samples; no invented endorsements, usage statistics, or performance claims appear. Native controls, keyboard operation, responsive widths, error feedback, captions, and transcript were checked as described above.
+- Purpose gate PASS: paper, ink, rules, the original C mark, and brief scene transitions follow the editorial rationale in DESIGN.md. No decorative gradients, glass surfaces, unrelated illustrations, or looping autoplay animation were added.
+- Liveliness PASS: ENERGY 2 / RHYTHM 3 / MOTION 2. The headline and film form the opening spread; the interactive practice and ownership chapters keep their distinct roles. Motion belongs to the user-started film.
+- Craftsmanship PASS: typography, layout, media controls, link destinations, and motion have written purposes. The native player avoids shipping a video authoring framework to visitors. Updated handbook copy describes implemented behaviour and explicit limits.
+- Publication boundary PASS: only original sample captures and public product material are included. The portfolio points to the public landing page, handbook, and repository. Existing unrelated portfolio edits were excluded from its release and retained locally.
+
+The portfolio addition passed its required type, lint, formatting, and production-build checks in a clean release copy. Its English, German, and Japanese project routes built successfully.

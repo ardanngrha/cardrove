@@ -3,7 +3,8 @@
   "version": "0.2.0",
   "private": true,
   "workspaces": [
-    "site"
+    "site",
+    "video"
   ],
   "type": "module",
   "engines": {
@@ -21,7 +22,9 @@
     "build:cloud": "vite build --mode cloud",
     "dev:site": "npm run dev --workspace site",
     "build:site": "npm run build --workspace site",
-    "preview:site": "npm run preview --workspace site"
+    "preview:site": "npm run preview --workspace site",
+    "video:render": "npm run render --workspace video",
+    "video:stills": "npm run stills --workspace video"
   },
   "dependencies": {
     "@lucide/svelte": "^1.57.0",
@@ -44,6 +47,7 @@
     "@types/sql.js": "^1.4.11",
     "cookie": "2.0.1",
     "prettier": "^3.9.10",
+    "prettier-plugin-astro": "0.14.0",
     "prettier-plugin-svelte": "^4.1.1",
     "svelte-check": "^4.3.0",
     "typescript": "^5.9.0",

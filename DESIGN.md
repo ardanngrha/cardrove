@@ -19,6 +19,14 @@ The owner selected: “Editorial modern, tenang tapi berkarakter”. The app and
 - Phone navigation becomes a bottom bar. Review ratings stay reachable near the thumb; tablet layouts preserve a compact rail and readable content width.
 - On the phone home screen, due and new counts precede the editorial session heading so a learner sees the workload before scrolling.
 
+## Feature film and homepage
+
+Reading this as: a product introduction for independent learners and self-hosters, in Cardrove's existing calm editorial language, dial ENERGY 2 / RHYTHM 3 / MOTION 2.
+
+The hero pairs the headline and setup action with a real product film. The 40-second, silent English film uses original sample content, chapter numbers, paper, ink, and the existing C monogram. A short typographic opening leads into import, recall and reveal, ratings, connected screens, and workspace settings. Screenshots show the working app, while a persistent sample label identifies the demo collection. Movement follows those actions rather than looping as decoration.
+
+The website serves a small WebP poster and a native MP4 player with `preload="none"`. Playback is requested by the visitor; a transcript and caption track provide another way to follow the film. Native video controls avoid shipping React or Remotion to website visitors. The left-hand headline sets the hierarchy, and the film supplies evidence for the product's behaviour. The portfolio reuses the poster as a project cover within its existing layout.
+
 ## Publication boundaries
 
 The public repository contains software, setup documentation, and original labeled sample content. Personal decks, media, sessions, environment files, and production bootstrap material are excluded. Existing storage identifiers and API routes remain compatible to preserve the deployed collection.

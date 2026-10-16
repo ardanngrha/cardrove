@@ -18,3 +18,9 @@
 /manifest.webmanifest
   Cache-Control: no-cache
   Content-Type: application/manifest+json
+
+/apple-touch-icon.png
+  Cache-Control: no-cache
+
+/icons/cardrove-touch-v2.png
+  Cache-Control: no-cache

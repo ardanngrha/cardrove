@@ -14,18 +14,24 @@ The app uses FSRS to calculate intervals. It schedules on the server so connecte
 
 Reveal the answer after attempting to recall it. Then choose:
 
-| Rating | Use it when |
-| --- | --- |
-| Again | You did not recall the answer. |
-| Hard | You recalled it with considerable effort. |
-| Good | You recalled it with a normal amount of effort. |
-| Easy | The answer came immediately. |
+| Rating | Use it when                                     |
+| ------ | ----------------------------------------------- |
+| Again  | You did not recall the answer.                  |
+| Hard   | You recalled it with considerable effort.       |
+| Good   | You recalled it with a normal amount of effort. |
+| Easy   | The answer came immediately.                    |
 
 Each rating displays its next interval. Use **Undo** to reverse the last available answer in your current session. An undo can be refused if another device has already changed that card.
 
 ### Keyboard shortcuts
 
-When focus is on the page, press **Space** to reveal the answer, then **1**, **2**, **3**, or **4** to rate it. Focused buttons retain their normal keyboard behaviour. Use Tab to reach controls and Escape to close a dialog that is not busy.
+Press **Space** or **Enter** to reveal an unanswered card when focus is on the page. Once the answer is visible, **1 = Again**, **2 = Hard**, **3 = Good**, and **4 = Easy**, including when a rating button has focus. Space and Enter keep their native behaviour on a focused button, link, or media control.
+
+Study shortcuts pause while you type in an input, open a dialog, or wait for an operation. Held keys, input-method composition, and keys combined with Ctrl, Command, or Alt are ignored. Use Tab to reach controls and Escape to close a dialog that is not busy.
+
+### Audio
+
+Supported sound references appear as native audio controls below the card. Tap Play to start playback; mobile browsers can require a user gesture. If a temporary cloud media URL expires or fails, use **Refresh audio** to request a new one. Unsupported codecs and browser or device restrictions can still prevent playback. The audio player sits outside the script-disabled card frame while imported card HTML remains sandboxed.
 
 ## Search your collection
 

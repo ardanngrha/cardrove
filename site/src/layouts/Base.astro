@@ -1,38 +1,101 @@
 ---
 import { brand, repository, link } from '../config';
 import '../styles/site.css';
-const { title = 'A little, remembered.', description = 'A personal home for your Anki decks. Study any subject, at your own pace, on infrastructure you control.' } = Astro.props;
+const {
+  title = 'A little, remembered.',
+  description = 'A personal home for your Anki decks. Study any subject, at your own pace, on infrastructure you control.',
+} = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site || Astro.url).href;
+const previewImage = new URL(link('media/cardrove-tour-poster.webp'), Astro.site || Astro.url).href;
 ---
+
 <!doctype html>
 <html lang="en">
   <head>
-    <meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="description" content={description}/>
-    <meta name="theme-color" content="#f7f5f0"/>
-    <link rel="icon" type="image/svg+xml" href={link('icons/cardrove.svg')}/>
-    <link rel="icon" type="image/png" sizes="32x32" href={link('icons/cardrove-32.png')}/>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#f7f5f0" />
+    <link rel="canonical" href={canonical} />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={`${title} · ${brand}`} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={previewImage} />
+    <meta
+      property="og:image:alt"
+      content="Cardrove review on a phone and computer, using a sample collection"
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="icon" type="image/svg+xml" href={link('icons/cardrove.svg')} />
+    <link rel="icon" type="image/png" sizes="32x32" href={link('icons/cardrove-32.png')} />
+    <link
+      rel="apple-touch-icon"
+      type="image/png"
+      sizes="180x180"
+      href={link('icons/cardrove-touch-v2.png')}
+    />
+    <meta name="apple-mobile-web-app-title" content={brand} />
     <title>{title} · {brand}</title>
-    <script is:inline>try { document.documentElement.dataset.theme = localStorage.getItem('site-theme') || 'system'; } catch {}</script>
+    <script is:inline>
+      try {
+        document.documentElement.dataset.theme = localStorage.getItem('site-theme') || 'system';
+      } catch {}
+    </script>
   </head>
   <body>
     <a class="skip" href="#content">Skip to content</a>
-    <header class="site-header"><a class="wordmark" href={link()}>{brand}<span>.</span></a><nav aria-label="Main navigation"><a class:list={{ current: Astro.url.pathname.includes('/docs') }} href={link('docs/')}>Handbook</a>{repository && <a href={repository}>GitHub <span aria-hidden="true">↗</span></a>}<button class="theme-toggle" aria-label="Switch color theme"><span class="theme-light" aria-hidden="true">◐</span><span class="theme-dark" aria-hidden="true">◑</span></button></nav></header>
-    <slot/>
-    <footer class="site-footer"><div><a class="wordmark" href={link()}>{brand}<span>.</span></a><p>A little, remembered.<br/>A collection of your own.</p></div><div><a href={link('docs/self-host/')}>Host your own</a><a href={link('docs/compatibility/')}>Compatibility</a>{repository && <a href={repository}>Source code</a>}</div><p>Independent software.<br/>No affiliation with Anki.</p></footer>
+    <header class="site-header">
+      <a class="wordmark" href={link()}>{brand}<span>.</span></a><nav aria-label="Main navigation">
+        <a class:list={{ current: Astro.url.pathname.includes('/docs') }} href={link('docs/')}
+          >Handbook</a
+        >{
+          repository && (
+            <a href={repository}>
+              GitHub <span aria-hidden="true">↗</span>
+            </a>
+          )
+        }<button class="theme-toggle" aria-label="Switch color theme"
+          ><span class="theme-light" aria-hidden="true">◐</span><span
+            class="theme-dark"
+            aria-hidden="true">◑</span
+          ></button>
+      </nav>
+    </header>
+    <slot />
+    <footer class="site-footer">
+      <div>
+        <a class="wordmark" href={link()}>{brand}<span>.</span></a><p>
+          A little, remembered.<br />A collection of your own.
+        </p>
+      </div><div>
+        <a href={link('docs/self-host/')}>Host your own</a><a href={link('docs/compatibility/')}
+          >Compatibility</a
+        >{repository && <a href={repository}>Source code</a>}
+      </div><p>Independent software.<br />No affiliation with Anki.</p>
+    </footer>
     <script>
       const button = document.querySelector<HTMLButtonElement>('.theme-toggle');
       button?.addEventListener('click', () => {
         const current = document.documentElement.dataset.theme;
-        const dark = current === 'dark' || (current === 'system' && matchMedia('(prefers-color-scheme: dark)').matches);
+        const dark =
+          current === 'dark' ||
+          (current === 'system' && matchMedia('(prefers-color-scheme: dark)').matches);
         const next = dark ? 'light' : 'dark';
         document.documentElement.dataset.theme = next;
         localStorage.setItem('site-theme', next);
       });
-      const observer = new IntersectionObserver(entries => {
-        for (const entry of entries) if (entry.isIntersecting) { entry.target.classList.add('in-view'); observer.unobserve(entry.target); }
-      }, { threshold: .12 });
-      document.querySelectorAll('[data-reveal]').forEach(element => observer.observe(element));
+      const observer = new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries)
+            if (entry.isIntersecting) {
+              entry.target.classList.add('in-view');
+              observer.unobserve(entry.target);
+            }
+        },
+        { threshold: 0.12 },
+      );
+      document.querySelectorAll('[data-reveal]').forEach((element) => observer.observe(element));
     </script>
   </body>
 </html>
