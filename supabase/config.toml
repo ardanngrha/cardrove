@@ -1,0 +1,4 @@
+project_id = "cardrove"
+
+[functions.myanki-api]
+verify_jwt = false

@@ -1,0 +1,20 @@
+---
+import Base from './Base.astro';
+import { chapters, link } from '../config';
+const { frontmatter = {}, title: directTitle, description: directDescription } = Astro.props;
+const title = directTitle || frontmatter.title || 'Handbook';
+const description = directDescription || frontmatter.description;
+const active = Astro.url.pathname.replace(/\/$/, '');
+---
+<Base {title} {description}>
+  <main class="docs-shell" id="content">
+    <aside class="docs-nav"><p class="index-label">The handbook</p><details class="chapter-menu" open><summary>Chapters</summary><nav aria-label="Documentation">{chapters.map((chapter, i) => <a aria-current={active === link('docs/' + (chapter.slug ? chapter.slug + '/' : '')).replace(/\/$/, '') ? 'page' : undefined} href={link('docs/' + (chapter.slug ? chapter.slug + '/' : ''))}><small>{String(i + 1).padStart(2, '0')}</small>{chapter.title}</a>)}</nav></details></aside>
+    <article class="prose"><header><p class="index-label">A collection of your own</p><h1>{title}</h1>{description && <p class="lead">{description}</p>}</header><slot/><div class="doc-end"><span>Something unclear?</span><a href={link('docs/contributing/')}>Help improve the handbook</a></div></article>
+  </main>
+</Base>
+<script>
+  const menu = document.querySelector<HTMLDetailsElement>('.chapter-menu');
+  const wide = matchMedia('(min-width: 900px)');
+  const update = () => { if (menu) menu.open = wide.matches; };
+  update(); wide.addEventListener('change', update);
+</script>

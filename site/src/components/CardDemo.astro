@@ -1,0 +1,42 @@
+---
+const cards = [
+  { topic: 'Language / Spanish', question: 'What does “sobremesa” mean?', answer: 'Time spent talking at the table after a meal.' },
+  { topic: 'Science / Biology', question: 'Which organelle produces most of a cell’s ATP?', answer: 'The mitochondrion, through cellular respiration.' },
+  { topic: 'Computing / Data structures', question: 'What ordering does a stack use?', answer: 'Last in, first out. The most recently added item leaves first.' },
+];
+---
+<section class="demo" aria-labelledby="demo-title" data-cards={JSON.stringify(cards)}>
+  <div class="demo-caption"><span id="demo-title">A small practice</span><span>Interactive sample / <span class="demo-position">01</span></span></div>
+  <div class="sample-card"><div class="sample-card-top"><span class="demo-topic">{cards[0].topic}</span><span class="demo-side">Recall</span></div><div class="sample-content" aria-live="polite"><p class="demo-question">{cards[0].question}</p><div class="demo-answer" hidden><span>Answer</span><p>{cards[0].answer}</p></div></div><div class="sample-card-bottom"><span>Original sample content</span><span>No progress is saved</span></div></div>
+  <div class="demo-controls"><p class="demo-prompt" aria-live="polite">Try recalling it before you turn the card.</p><button class="button primary demo-reveal">Reveal answer <span aria-hidden="true">↻</span></button><button class="button secondary demo-next" hidden>Next sample <span aria-hidden="true">→</span></button></div>
+</section>
+<script>
+  const root = document.querySelector<HTMLElement>('.demo');
+  if (root) {
+    const cards = JSON.parse(root.dataset.cards || '[]') as { topic: string; question: string; answer: string }[];
+    let index = 0;
+    const reveal = root.querySelector<HTMLButtonElement>('.demo-reveal')!;
+    const next = root.querySelector<HTMLButtonElement>('.demo-next')!;
+    const answer = root.querySelector<HTMLElement>('.demo-answer')!;
+    const prompt = root.querySelector<HTMLElement>('.demo-prompt')!;
+    reveal.addEventListener('click', () => {
+      answer.hidden = false; reveal.hidden = true; next.hidden = false;
+      root.querySelector('.demo-side')!.textContent = 'Answer';
+      prompt.textContent = 'In the app, rate your recall to schedule the next review.';
+      next.focus();
+    });
+    next.addEventListener('click', () => {
+      index = (index + 1) % cards.length;
+      root.querySelector('.demo-topic')!.textContent = cards[index].topic;
+      root.querySelector('.demo-question')!.textContent = cards[index].question;
+      answer.querySelector('p')!.textContent = cards[index].answer;
+      root.querySelector('.demo-position')!.textContent = String(index + 1).padStart(2, '0');
+      root.querySelector('.demo-side')!.textContent = 'Recall';
+      answer.hidden = true; reveal.hidden = false; next.hidden = true;
+      prompt.textContent = 'Try recalling it before you turn the card.';
+      const content = root.querySelector('.sample-content')!;
+      if (!matchMedia('(prefers-reduced-motion: reduce)').matches) content.animate([{ opacity: 0, transform: 'translateY(8px)' }, { opacity: 1, transform: 'translateY(0)' }], { duration: 220, easing: 'ease-out' });
+      reveal.focus();
+    });
+  }
+</script>

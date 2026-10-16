@@ -1,0 +1,36 @@
+---
+import { brand, repository, link } from '../config';
+import '../styles/site.css';
+const { title = 'A little, remembered.', description = 'A personal home for your Anki decks. Study any subject, at your own pace, on infrastructure you control.' } = Astro.props;
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="description" content={description}/>
+    <meta name="theme-color" content="#f7f5f0"/>
+    <title>{title} · {brand}</title>
+    <script is:inline>try { document.documentElement.dataset.theme = localStorage.getItem('site-theme') || 'system'; } catch {}</script>
+  </head>
+  <body>
+    <a class="skip" href="#content">Skip to content</a>
+    <header class="site-header"><a class="wordmark" href={link()}>{brand}<span>.</span></a><nav aria-label="Main navigation"><a class:list={{ current: Astro.url.pathname.includes('/docs') }} href={link('docs/')}>Handbook</a>{repository && <a href={repository}>GitHub <span aria-hidden="true">↗</span></a>}<button class="theme-toggle" aria-label="Switch color theme"><span class="theme-light" aria-hidden="true">◐</span><span class="theme-dark" aria-hidden="true">◑</span></button></nav></header>
+    <slot/>
+    <footer class="site-footer"><div><a class="wordmark" href={link()}>{brand}<span>.</span></a><p>A little, remembered.<br/>A collection of your own.</p></div><div><a href={link('docs/self-host/')}>Host your own</a><a href={link('docs/compatibility/')}>Compatibility</a>{repository && <a href={repository}>Source code</a>}</div><p>Independent software.<br/>No affiliation with Anki.</p></footer>
+    <script>
+      const button = document.querySelector<HTMLButtonElement>('.theme-toggle');
+      button?.addEventListener('click', () => {
+        const current = document.documentElement.dataset.theme;
+        const dark = current === 'dark' || (current === 'system' && matchMedia('(prefers-color-scheme: dark)').matches);
+        const next = dark ? 'light' : 'dark';
+        document.documentElement.dataset.theme = next;
+        localStorage.setItem('site-theme', next);
+      });
+      const observer = new IntersectionObserver(entries => {
+        for (const entry of entries) if (entry.isIntersecting) { entry.target.classList.add('in-view'); observer.unobserve(entry.target); }
+      }, { threshold: .12 });
+      document.querySelectorAll('[data-reveal]').forEach(element => observer.observe(element));
+    </script>
+  </body>
+</html>

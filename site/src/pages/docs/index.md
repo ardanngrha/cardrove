@@ -1,0 +1,35 @@
+---
+layout: ../../layouts/Docs.astro
+title: Start here
+description: A personal study space, on infrastructure you control.
+---
+
+This app imports supported Anki decks and schedules reviews with FSRS. Each installation belongs to one person. Your connected devices share the same collection and progress.
+
+## Choose a home
+
+**Local server:** run Node.js and SQLite on a computer you control. Open the app from that computer or other devices on your network. The server must stay running. Start with the repository’s quickstart.
+
+**Cloud:** serve the static app from Cloudflare Pages. Supabase provides the database, private media storage, and device sessions. This lets your phone and computer reach the same collection without keeping a home computer online.
+
+[Follow the self-hosting guide](./self-host/).
+
+## Bring a deck
+
+Open **Import deck** and choose an `.apkg` file. Supported images and audio travel with it. Wait for the import to finish before reviewing. Keep your original file as a source backup.
+
+New decks start with fresh scheduling. Anki’s existing review history is not imported. Reimporting the same deck updates newer notes while preserving this app’s progress.
+
+[Check deck compatibility](./compatibility/) before importing a large collection.
+
+## Find your pace
+
+Open **Study** and begin a review. Recall the answer, reveal it, then rate how well you remembered. In Settings, choose a daily new-card allowance and a review goal.
+
+A new-card allowance limits how many new cards are introduced. Your review goal is a progress marker. It does not prevent you from completing due reviews.
+
+## Keep a copy
+
+Cloud installations offer a full collection backup in Settings. Local installations can be backed up by stopping the server and copying the data folder. Back up regularly and keep the files somewhere independent of the installation.
+
+[Read about devices and backups](./devices-backups/).
