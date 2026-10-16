@@ -1,5 +1,5 @@
 import { BlobWriter, ZipWriter, TextReader, BlobReader } from '@zip.js/zip.js';
-import { cloudApi, cloud } from './api';
+import { cloudApi, cloud, mediaBucket } from './api';
 import { t } from '../preferences.svelte';
 export async function createBackup(progress: (text: string) => void = () => {}) {
   progress(t('Taking a collection snapshot…', 'Mengambil salinan data…'));
@@ -26,7 +26,7 @@ export async function createBackup(progress: (text: string) => void = () => {}) 
     for (let i = 0; i < media.length; i += 4) {
       const blobs = await Promise.all(
         media.slice(i, i + 4).map(async (m) => {
-          const { data, error } = await cloud!.storage.from('myanki-media').download(m.disk);
+          const { data, error } = await cloud!.storage.from(mediaBucket()).download(m.disk);
           if (error) throw error;
           return { disk: m.disk, data: data! };
         }),

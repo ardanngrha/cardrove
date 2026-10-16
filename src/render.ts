@@ -180,6 +180,26 @@ export function cardDocument(
     @media(max-width:500px){body.card{padding:24px 16px;font-size:${longContent ? '18' : '24'}px}body.card div[style*="font-size"]{max-width:100%;overflow-wrap:anywhere}img{max-height:360px;object-fit:contain}}
     </style></head><body dir="auto" class="card card${card.ord + 1}${dark ? ' nightMode night_mode' : ''}">${parsed.body.innerHTML}</body></html>`;
 }
+
+export function cardPresentation(
+  card: Card,
+  answer = false,
+  urls?: Record<string, string>,
+  theme = 'light',
+) {
+  const parsed = new DOMParser().parseFromString(
+    cardDocument(card, answer, urls, theme),
+    'text/html',
+  );
+  const audio: string[] = [];
+  // Keep imported HTML sandboxed; Safari's native player lives in the trusted app document.
+  parsed.querySelectorAll('audio').forEach((element) => {
+    const src = element.getAttribute('src') || element.querySelector('source')?.getAttribute('src');
+    if (src && !audio.includes(src)) audio.push(src);
+    element.remove();
+  });
+  return { document: '<!doctype html>' + parsed.documentElement.outerHTML, audio };
+}
 export function preview(card: Card) {
   const values: Record<string, string> = {
     Tags: card.tags,

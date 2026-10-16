@@ -17,7 +17,7 @@ npm ci
 npm run dev
 ```
 
-Open `http://localhost:4317`. Create the local account, then import a deck. Data is stored in the ignored `data/` folder. To use a different location, set `MYANKI_DATA_DIR` to an absolute path.
+Open `http://localhost:4317`. Use the first-owner setup code printed by the server. Enter your name and workspace name, then save your generated permanent access code. Import a deck after completing setup. Data is stored in the ignored `data/` folder. To use a different location, set `CARDROVE_DATA_DIR` to an absolute path. Existing installations retain their collection through the compatibility migration; stop the old server before upgrading.
 
 For a production build:
 
@@ -38,10 +38,12 @@ Create your own project on the Free plan. Install the official Supabase CLI, sig
 supabase login
 supabase link --project-ref YOUR_PROJECT_REF
 supabase db push
-supabase functions deploy myanki-api --no-verify-jwt
+supabase functions deploy cardrove-api --no-verify-jwt
 ```
 
 The migrations create the schema, access policies, private Storage bucket, and review operations. Apply every migration in order.
+
+The schema retains technical identifiers from earlier releases to preserve existing installations. Do not rename tables or buckets independently of a migration.
 
 The initial claim endpoint needs to work before a device has a session. This is why gateway JWT verification is disabled for the function. Private endpoints still verify the bearer token and approved device inside the handler. Keep those checks intact.
 

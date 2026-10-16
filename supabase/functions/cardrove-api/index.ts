@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import { createEmptyCard, fsrs } from 'ts-fsrs';
+import { readJsonBody } from './request-body.ts';
 
 const url = Deno.env.get('SUPABASE_URL')!;
 const secret = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
@@ -10,7 +11,7 @@ const admin = createClient(url, secret, {
 const scheduler = fsrs({ enable_fuzz: false, request_retention: 0.9 });
 const cors = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, apikey, content-type, x-client-info, x-myanki',
+  'Access-Control-Allow-Headers': 'authorization, apikey, content-type, x-client-info, x-cardrove',
   'Access-Control-Allow-Methods': 'GET,POST,PATCH,DELETE,OPTIONS',
 };
 const fail = (message: string, status = 400): never => {
@@ -49,21 +50,13 @@ function day(date: Date, tz: string) {
 }
 async function result(query: any) {
   const { data, error } = await query;
-  if (error) fail(error.message, ['40001', 'PT409'].includes(error.code) ? 409 : 400);
+  if (error) fail(error.message, error.code?.startsWith('PT') ? Number(error.code.slice(2)) : error.code === '40001' ? 409 : 400);
   return data;
 }
 async function rpc(name: string, args = {}) {
   return result(admin.rpc('myanki_' + name, args));
 }
-async function body(req: Request) {
-  const raw = await req.text();
-  if (raw.length > 2_000_000) fail('Permintaan terlalu besar.', 413);
-  try {
-    return raw ? JSON.parse(raw) : {};
-  } catch {
-    fail('Data JSON tidak valid.');
-  }
-}
+const body = readJsonBody;
 async function approved(req: Request) {
   const token = req.headers.get('Authorization')?.replace(/^Bearer\s+/i, '');
   if (!token) fail('Perangkat belum terhubung.', 401);
@@ -85,21 +78,18 @@ Deno.serve(async (req: Request) => {
   if (req.method === 'OPTIONS') return new Response(null, { status: 204, headers: cors });
   try {
     const parsed = new URL(req.url);
-    const route = parsed.pathname.split('/myanki-api')[1] || '/';
+    const route = parsed.pathname.split('/cardrove-api')[1] || '/';
     const method = req.method;
     if (route === '/session' && method === 'GET') {
       let device = null;
       try {
         device = await approved(req);
       } catch {}
-      const workspace = await result(admin.from('myanki_workspace').select('name').single());
-      const count = await admin
-        .from('myanki_devices')
-        .select('id', { count: 'exact', head: true })
-        .is('revoked_at', null);
+      if (!device) return json({ setup: false, user: null });
+      const workspace = await result(admin.from('myanki_workspace').select('name,owner_name,access_saved,media_bucket').single());
       return json({
-        setup: count.count === 0,
-        user: device ? { name: workspace.name, deviceId: device.id } : null,
+        setup: false,
+        user: { name: workspace.owner_name || '', workspaceName: workspace.name, needsOnboarding: !workspace.access_saved, deviceId: device.id, mediaBucket: workspace.media_bucket },
       });
     }
     if (route === '/claim' && method === 'POST') {
@@ -116,14 +106,15 @@ Deno.serve(async (req: Request) => {
           .gt('expires_at', new Date().toISOString())
           .maybeSingle(),
       );
-      if (!claim) fail('Kode sudah dipakai atau kedaluwarsa.', 403);
-      const email = crypto.randomUUID() + '@devices.myanki.invalid',
+      const permanent = claim ? null : await result(admin.from('myanki_access').select('singleton').eq('token_hash', tokenHash).maybeSingle());
+      if (!claim && !permanent) fail('Kode tidak valid, sudah dipakai, atau sudah diganti.', 403);
+      const email = crypto.randomUUID() + '@devices.cardrove.invalid',
         password = random();
       const created = await admin.auth.admin.createUser({
         email,
         password,
         email_confirm: true,
-        user_metadata: { myanki_device: true },
+        user_metadata: { cardrove_device: true },
       });
       if (created.error || !created.data.user) fail('Tidak dapat membuat sesi perangkat.');
       const id = created.data.user.id;
@@ -143,11 +134,6 @@ Deno.serve(async (req: Request) => {
               .slice(0, 80) || 'Perangkat baru',
         });
         granted = true;
-        if (claim.kind === 'bootstrap' && input.name)
-          await admin
-            .from('myanki_workspace')
-            .update({ name: String(input.name).slice(0, 64) })
-            .eq('singleton', true);
         return json({
           session: {
             access_token: signed.data.session.access_token,
@@ -160,6 +146,37 @@ Deno.serve(async (req: Request) => {
       }
     }
     const device = await approved(req);
+    if (route === '/workspace/setup' && method === 'POST') {
+      const input = await body(req), token = random();
+      if (typeof input.name !== 'string' || typeof input.workspaceName !== 'string') fail('Nama tidak valid.');
+      await rpc('setup_workspace', {p_device:device.id,p_owner:input.name,p_name:input.workspaceName,p_hash:await hash(token)});
+      return json({token});
+    }
+    if (route === '/workspace' && method === 'PATCH') {
+      const { name, workspaceName } = await body(req);
+      if (typeof name !== 'string' || !name.trim() || name.trim().length > 64 || typeof workspaceName !== 'string' || !workspaceName.trim() || workspaceName.trim().length > 64) fail('Nama harus 1 sampai 64 karakter.');
+      await result(admin.from('myanki_workspace').update({owner_name:name.trim(),name:workspaceName.trim()}).eq('singleton',true));
+      return json({ok:true});
+    }
+    if (route === '/access-code' && method === 'POST') {
+      const {confirm} = await body(req);
+      const workspace = await result(admin.from('myanki_workspace').select('name').single());
+      if (confirm !== workspace.name) fail('Nama workspace belum cocok.');
+      const token = random();
+      await rpc('rotate_access',{p_device:device.id,p_hash:await hash(token)});
+      return json({token});
+    }
+    if (route === '/workspace/confirm-access' && method === 'POST') {
+      const {token} = await body(req);
+      if (typeof token !== 'string' || !/^[a-f0-9]{64}$/.test(token)) fail('Kode tidak valid.');
+      await rpc('confirm_access',{p_device:device.id,p_hash:await hash(token)});
+      return json({ok:true});
+    }
+    if (route === '/progress/reset' && method === 'POST') {
+      const {confirm} = await body(req);
+      if (typeof confirm !== 'string') fail('Nama workspace belum cocok.');
+      return json(await rpc('reset_progress',{p_confirm:confirm,p_empty:createEmptyCard()}));
+    }
     if (route === '/devices' && method === 'GET')
       return json(await result(admin.from('myanki_devices').select('*').order('created_at')));
     if (route === '/pair-token' && method === 'POST') {
@@ -500,8 +517,9 @@ Deno.serve(async (req: Request) => {
         fail('Daftar media tidak valid.');
       const rows = await result(admin.from('myanki_media').select('name,disk').in('name', names));
       const paths = [...new Set(rows.map((r: any) => r.disk))];
+      const workspace = await result(admin.from('myanki_workspace').select('media_bucket').single());
       const signed = paths.length
-        ? await admin.storage.from('myanki-media').createSignedUrls(paths, 600)
+        ? await admin.storage.from(workspace.media_bucket).createSignedUrls(paths, 600)
         : { data: [], error: null };
       if (signed.error) fail('Media tidak dapat dibuka.');
       return json(
@@ -513,7 +531,11 @@ Deno.serve(async (req: Request) => {
         ),
       );
     }
-    if (route === '/backup' && method === 'GET') return json(await rpc('backup'));
+    if (route === '/backup' && method === 'GET') {
+      const snapshot = await rpc('backup');
+      snapshot.format = 'CardroveBackup';
+      return json(snapshot);
+    }
     if (route === '/export' && method === 'GET') {
       const workspace = await result(admin.from('myanki_workspace').select('*').single());
       const progress = [];
@@ -542,7 +564,7 @@ Deno.serve(async (req: Request) => {
         if (batch.length < 1000) break;
       }
       return json({
-        format: 'MyAnki',
+        format: 'Cardrove',
         version: 2,
         exportedAt: new Date().toISOString(),
         settings: workspace.settings,

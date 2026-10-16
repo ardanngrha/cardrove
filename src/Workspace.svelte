@@ -20,6 +20,9 @@
     LoaderCircle,
   } from '@lucide/svelte';
   import Flashcard from './Flashcard.svelte';
+  import InstallPanel from './InstallPanel.svelte';
+  import WorkspaceProfile from './WorkspaceProfile.svelte';
+  import { studyShortcut } from './study-shortcuts';
   import { cloudMode, cloudApi, initialClaim } from './cloud/api';
   import { preview, type Card } from './render';
   import {
@@ -48,7 +51,12 @@
     total: number;
   };
   const brand = 'Cardrove';
-  let user = $state<{ name: string; deviceId?: string } | null>(null);
+  let user = $state<{
+    name: string;
+    workspaceName?: string;
+    needsOnboarding?: boolean;
+    deviceId?: string;
+  } | null>(null);
   let setup = $state(false),
     ready = $state(false),
     busy = $state(false),
@@ -87,6 +95,7 @@
     timezone = $state(browserTimezone());
   let DevicePanel = $state<any>(null),
     deviceLoading = $state(false);
+  let accessCodePending = $state(false);
   const selected = $derived(summary?.decks.find((d) => d.id === selectedDeck));
   const due = $derived(summary?.decks.reduce((n, d) => n + d.due_count, 0) ?? 0);
   const fresh = $derived(summary?.decks.reduce((n, d) => n + d.new_count, 0) ?? 0);
@@ -133,7 +142,7 @@
     const response = await fetch('/api' + route, {
       ...options,
       headers: {
-        'X-MyAnki': '1',
+        'X-Cardrove': '1',
         ...(options.body instanceof FormData ? {} : { 'Content-Type': 'application/json' }),
         ...options.headers,
       },
@@ -156,6 +165,18 @@
     goal = summary!.settings.goal;
     timezone = summary!.settings.timezone;
   }
+  async function reloadProfile(reset = false) {
+    user = (await api('/session')).user;
+    if (user) await refresh();
+    else summary = null;
+    if (reset) {
+      pendingReview = null;
+      reviewId = null;
+      card = null;
+      sessionCount = 0;
+      view = 'home';
+    }
+  }
   async function run(fn: () => Promise<void>) {
     if (busy) return;
     busy = true;
@@ -176,6 +197,13 @@
     });
   }
   async function navigate(to: string) {
+    if (accessCodePending) {
+      message = t(
+        'Save your new access code before leaving this page.',
+        'Simpan kode akses baru sebelum meninggalkan halaman ini.',
+      );
+      return;
+    }
     if (busy) return;
     view = to;
     error = '';
@@ -260,6 +288,10 @@
     });
   }
   function openImport() {
+    if (accessCodePending) {
+      message = t('Save your new access code first.', 'Simpan kode akses baru terlebih dahulu.');
+      return;
+    }
     modal = 'import';
     file = null;
     importResult = null;
@@ -330,6 +362,22 @@
   const timezones = [...new Set([browserTimezone(), ...Intl.supportedValuesOf('timeZone'), 'UTC'])];
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   const motion = () => (reducedMotion.matches ? 0 : 170);
+  function handleStudyKeys(e: KeyboardEvent) {
+    const target = e.target as Element | null;
+    const action = studyShortcut(e, {
+      reviewing: view === 'study' && !!card,
+      revealed,
+      blocked: !!modal || busy,
+      editing: !!target?.closest?.(
+        'input,textarea,select,[role="textbox"],[contenteditable]:not([contenteditable="false"])',
+      ),
+      nativeActivation: !!target?.closest?.('button,a,summary,audio,video'),
+    });
+    if (action === null) return;
+    e.preventDefault();
+    if (action === 'reveal') revealed = true;
+    else void rate(action);
+  }
   function closeModal() {
     if (!busy) {
       modal = '';
@@ -392,7 +440,8 @@
       if (!user || busy) return;
       syncing = true;
       try {
-        await refresh();
+        await reloadProfile();
+        if (!user) return;
         if (view === 'study' && card) {
           const found = await api('/card/' + card.id);
           if (found.version !== card.version || found.modified !== card.modified) await next();
@@ -403,31 +452,11 @@
         syncing = false;
       }
     };
-    const keys = (e: KeyboardEvent) => {
-      if (
-        modal ||
-        busy ||
-        ['INPUT', 'TEXTAREA', 'SELECT', 'BUTTON', 'A'].includes(
-          (e.target as HTMLElement)?.tagName,
-        ) ||
-        (e.target as HTMLElement)?.isContentEditable
-      )
-        return;
-      if (view === 'study' && card) {
-        if (e.code === 'Space') {
-          e.preventDefault();
-          revealed = true;
-        } else if (revealed && ['1', '2', '3', '4'].includes(e.key)) {
-          e.preventDefault();
-          void rate(Number(e.key));
-        }
-      }
-    };
     window.addEventListener('focus', focus);
-    window.addEventListener('keydown', keys);
+    window.addEventListener('keydown', handleStudyKeys);
     return () => {
       window.removeEventListener('focus', focus);
-      window.removeEventListener('keydown', keys);
+      window.removeEventListener('keydown', handleStudyKeys);
     };
   });
 </script>
@@ -505,13 +534,13 @@
                   'Gunakan kode penyiapan dari pemilik instalasi ini.',
                 )
               : t(
-                  'On a connected device, open Settings and create a connection code. Paste it below or scan its QR code from your phone.',
-                  'Di perangkat yang sudah terhubung, buka Pengaturan dan buat kode penghubung. Tempel di bawah atau pindai QR dari HP-mu.',
+                  'Paste your saved access code, a temporary device code, or the first-owner setup code supplied during deployment.',
+                  'Tempel kode akses yang kamu simpan, kode perangkat sementara, atau kode penyiapan pemilik dari proses deploy.',
                 )
             : setup
               ? t(
-                  'Choose a name and password for this private installation.',
-                  'Pilih nama dan kata sandi untuk instalasi pribadi ini.',
+                  'Use the first-owner setup code printed by your server. You will choose your names and receive a permanent access code next.',
+                  'Gunakan kode penyiapan pemilik yang tercetak di server. Setelah ini, isi nama dan simpan kode akses tetapmu.',
                 )
               : t(
                   'Use the same account to continue on your phone or computer.',
@@ -524,26 +553,24 @@
             void login();
           }}
         >
-          {#if !cloudMode || setup}<label
-              >{t('Your name', 'Namamu')}<input
+          {#if !cloudMode && !setup}<label
+              >{t('Legacy account name (optional)', 'Nama akun lama (opsional)')}<input
                 bind:value={name}
-                required
-                minlength="2"
                 maxlength="64"
                 autocomplete="username"
               /></label
             >{/if}
           <label
-            >{cloudMode
-              ? t('Connection code', 'Kode penghubung')
-              : t('Password', 'Kata sandi')}<input
+            >{setup
+              ? t('First-owner setup code', 'Kode penyiapan pemilik')
+              : t('Access code', 'Kode akses')}<input
               type="password"
               bind:value={password}
               required
-              minlength={cloudMode ? 64 : 8}
+              minlength={cloudMode || setup ? 64 : 8}
               maxlength="256"
               autocomplete={cloudMode ? 'off' : setup ? 'new-password' : 'current-password'}
-              placeholder={cloudMode
+              placeholder={cloudMode || setup
                 ? t('Paste your code', 'Tempel kode di sini')
                 : t('At least 8 characters', 'Minimal 8 karakter')}
             /></label
@@ -560,8 +587,8 @@
         <p class="fine-print">
           {cloudMode
             ? t(
-                'Codes are single-use and expire. If yours has expired, create another on a connected device.',
-                'Kode berlaku sekali dan bisa kedaluwarsa. Buat kode baru dari perangkat terhubung jika diperlukan.',
+                'Your saved access code stays valid until replaced. Temporary device and first-owner setup codes expire and work once.',
+                'Kode akses tersimpan berlaku sampai diganti. Kode perangkat sementara dan kode penyiapan pemilik berlaku sekali dan bisa kedaluwarsa.',
               )
             : t(
                 'Your collection is stored on this server. Keep a backup of your data folder.',
@@ -571,11 +598,24 @@
       </div>
     </section>
   </main>
+{:else if user.needsOnboarding}
+  <main id="main-content" class="onboarding-page">
+    <header><a class="wordmark" href="/">{brand}<span>.</span></a>{@render appearance()}</header>
+    <WorkspaceProfile
+      {user}
+      {api}
+      onboarding
+      onupdated={reloadProfile}
+      onpending={(pending) => (accessCodePending = pending)}
+    />
+  </main>
 {:else}
   <div class="app-shell" class:review-mode={view === 'study'}>
     <aside class="rail">
       <a class="wordmark" href="/">{brand}<span>.</span></a>
-      <p class="rail-caption">{t('Your study space', 'Ruang belajarmu')}</p>
+      <p class="rail-caption" dir="auto">
+        {user.workspaceName || t('Your study space', 'Ruang belajarmu')}
+      </p>
       <nav aria-label={t('Main navigation', 'Navigasi utama')}>
         {#each navigation as item}<button
             aria-current={view === item.id || (item.id === 'home' && view === 'study')
@@ -604,6 +644,7 @@
             class="icon-button"
             aria-label={t('Sign out', 'Keluar')}
             title={t('Sign out', 'Keluar')}
+            disabled={busy || accessCodePending}
             onclick={() =>
               run(async () => {
                 await api('/logout', { method: 'POST' });
@@ -786,7 +827,7 @@
                       <span>{revealed ? t('Answer', 'Jawaban') : t('Recall', 'Ingat kembali')}</span
                       ><span dir="auto">{card.model.name}</span>
                     </div>
-                    <Flashcard {card} answer={revealed} />
+                    <Flashcard {card} answer={revealed} onshortcut={handleStudyKeys} />
                     <div class="study-card-footer">
                       <span dir="auto">{card.tags || card.deck_name}</span><span
                         >{(card.reps ?? 0) > 0
@@ -806,7 +847,7 @@
                       class="button primary reveal"
                       onclick={() => (revealed = true)}
                       disabled={busy}
-                      >{t('Reveal answer', 'Tampilkan jawaban')}<kbd>space</kbd></button
+                      >{t('Reveal answer', 'Tampilkan jawaban')}<kbd>space / enter</kbd></button
                     >{:else}<p>
                       {t('How well did you remember?', 'Seberapa mudah kamu mengingatnya?')}
                     </p>
@@ -1084,7 +1125,7 @@
                 </div>
                 <button
                   class="text-button"
-                  disabled={busy}
+                  disabled={busy || accessCodePending}
                   onclick={() =>
                     run(async () => {
                       await api('/logout', { method: 'POST' });
@@ -1159,6 +1200,13 @@
                   >
                 </div>
               </section>
+              <WorkspaceProfile
+                {user}
+                {api}
+                onupdated={reloadProfile}
+                onpending={(pending) => (accessCodePending = pending)}
+              />
+              <InstallPanel />
               {#if cloudMode}{#if DevicePanel}<DevicePanel
                     {api}
                     currentId={user.deviceId || ''}

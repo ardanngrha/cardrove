@@ -119,3 +119,28 @@ Applied [anti-slop](https://github.com/miqdadbadjuber/anti-slop) in During mode.
 ## Performance evidence
 
 Configured cloud builds are compared with the original configured cloud app. The initial main JavaScript changed from approximately 553 KB (191 KB gzip) to 368 KB (113 KB gzip). QR, full-backup ZIP, and device controls load separately. Import parsing continues in a worker. These are build-byte measurements, not a device-memory benchmark, latency guarantee, or proof of lower peak import memory. SQLite WASM and large media still carry real costs.
+
+## Workspace and installation update
+
+The follow-up release adds owner/workspace onboarding, a reusable 256-bit access code, code rotation, typed-confirmation progress reset, an installable manifest with C icons, and network-only service-worker navigation. The active API is `cardrove-api`. Deployed database identifiers remain compatible; a broad live rename was blocked by automatic approval review and was not applied.
+
+Eight automated tests pass. Added coverage checks setup ownership, reuse of the saved code, rejection of the old code after rotation, existing-device continuity, workspace rename, reset confirmation, preserved cards, and stale-review version rejection. Keyboard tests cover all four ratings, reveal gating, text entry, modifiers, composition, and held-key repeat. JSON stream limits and the production CSP are tested.
+
+Cloud SQL behaviour was tested in temporary tables and a separate rollback-only schema with zero production rows changed. The applied migration is additive. After application, production card, note, review, media, media-byte, and active-device counts matched their pre-migration baseline. The credential-hash table has no anonymous or authenticated read grant. No production study progress was reset during verification.
+
+Browser evidence for the added controls:
+
+- First-owner setup opened the name form; name and workspace inputs produced a private code save screen. Continue stayed disabled until the save checkbox was checked.
+- The sample workspace opened after confirmation. Editing its workspace name changed the visible shelf name and displayed a saved status.
+- A replacement code opened the same save flow. Attempting to navigate away displayed a save-first message. Confirming the saved code restored normal navigation.
+- Reset stayed disabled before typing the workspace name and became enabled after an exact match. Successful reset and data preservation were exercised by automated API and PostgreSQL fixture checks, rather than resetting the owner's real history.
+- Home-screen help expanded with iOS, Android, and desktop instructions. The browser parsed the manifest with zero errors, standalone display, and 192/512/maskable icon entries.
+- The original WAV sample played through a native top-level audio element: readyState 4, no media error, and advancing playback time. Imported card content remained in its script-disabled frame.
+- Enter revealed an answer, then key 3 graded Good while a rating button had focus; the reviewed count advanced to one.
+- A separate production-CSP browser harness parsed an original APKG in the import worker and reported three cards, without console errors. This verifies that the stricter CSP still permits SQLite/WASM parsing.
+
+The installed iPhone/Android app and the specific failing iPhone audio file have not been tested on physical devices here. The Safari audio change removes the sandboxed native-player boundary without enabling card scripts; verification on the reporting iPhone is still needed. Browser installation prompts depend on platform support and eligibility. The install button only appears after the browser offers its native prompt. [SECURITY.md](../SECURITY.md) records the two remaining Supabase advisor warning categories and the controls that make server-only RLS tables intentionally deny browser access.
+
+The original anti-slop direction and semantic colour system are retained. The new C icon is an original vector letterform requested by the owner. Form disclosures preserve task hierarchy, code-save text describes real access consequences, controls are labelled, and new code/backup filenames are ignored by Git. No new adoption, security certification, offline-study, or memory-performance claim is introduced.
+
+The network-only service worker was also tested with its local server stopped: reloading displayed the bilingual connection-needed page instead of cached private cards. Browser layout metrics for the checked 390-pixel workspace settings showed a 390-pixel content width.

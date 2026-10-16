@@ -8,7 +8,7 @@ import { fixture } from './helpers.mjs';
 import { openStore } from '../server/store.mjs';
 import { setTimeout } from 'node:timers/promises';
 test('import, auth, FSRS, undo, duplicate protection, editing and device sessions survive restart', async () => {
-  const dir = await mkdtemp(path.join(os.tmpdir(), 'myanki-api-')),
+  const dir = await mkdtemp(path.join(os.tmpdir(), 'cardrove-api-')),
     file = await fixture(dir),
     port = 19400 + Math.floor(Math.random() * 500),
     base = `http://127.0.0.1:${port}`;
@@ -16,7 +16,7 @@ test('import, auth, FSRS, undo, duplicate protection, editing and device session
   async function start() {
     child = spawn(process.execPath, ['server/index.mjs', '--api-only'], {
       cwd: path.resolve(import.meta.dirname, '..'),
-      env: { ...process.env, MYANKI_DATA_DIR: dir, PORT: String(port), HOST: '127.0.0.1' },
+      env: { ...process.env, CARDROVE_DATA_DIR: dir, PORT: String(port), HOST: '127.0.0.1', CARDROVE_SETUP_CODE:'test-first-owner-code' },
       stdio: ['ignore', 'pipe', 'pipe'],
     });
     let logs = '';
@@ -41,7 +41,7 @@ test('import, auth, FSRS, undo, duplicate protection, editing and device session
     const response = await fetch(base + '/api' + endpoint, {
       method,
       headers: {
-        'X-MyAnki': '1',
+        'X-Cardrove': '1',
         ...(body instanceof FormData ? {} : { 'Content-Type': 'application/json' }),
         ...(cookie ? { Cookie: cookie } : {}),
         ...(origin ? { Origin: origin } : {}),
@@ -60,7 +60,7 @@ test('import, auth, FSRS, undo, duplicate protection, editing and device session
     assert.equal((await call('/session')).data.setup, true);
     const owner = await call('/auth', {
       method: 'POST',
-      body: { name: 'owner', password: 'test-password-123' },
+      body: { name: 'owner', password: 'test-password-123', setupCode:'test-first-owner-code' },
     });
     assert.equal(owner.status, 200);
     const cookie = owner.cookie;
@@ -205,7 +205,7 @@ test('import, auth, FSRS, undo, duplicate protection, editing and device session
       401,
     );
     const backup = await call('/export', { cookie });
-    assert.equal(backup.data.format, 'MyAnki');
+    assert.equal(backup.data.format, 'Cardrove');
     assert.equal(backup.data.progress.length, 1);
     await stop();
     await start();

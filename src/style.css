@@ -1603,6 +1603,48 @@ summary {
     padding-top: 35px;
   }
 }
+.onboarding-page {
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 24px;
+}
+.onboarding-page > header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 40px;
+}
+.onboarding-page .settings-panel {
+  padding: clamp(20px, 5vw, 48px);
+}
+.rail-caption {
+  overflow-wrap: anywhere;
+}
+.onboarding-page h1 {
+  font:
+    400 clamp(32px, 7vw, 44px)/1.12 Georgia,
+    serif;
+  margin-bottom: 20px;
+}
+@media (max-width: 739px) {
+  input,
+  textarea,
+  select {
+    font-size: 16px;
+  }
+  .topbar {
+    padding-top: calc(12px + env(safe-area-inset-top));
+    padding-left: calc(20px + env(safe-area-inset-left));
+    padding-right: calc(20px + env(safe-area-inset-right));
+  }
+  .onboarding-page {
+    padding-top: calc(24px + env(safe-area-inset-top));
+  }
+  .entry-story {
+    padding-top: calc(28px + env(safe-area-inset-top));
+  }
+}
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

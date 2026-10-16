@@ -10,6 +10,8 @@ const { title = 'A little, remembered.', description = 'A personal home for your
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="description" content={description}/>
     <meta name="theme-color" content="#f7f5f0"/>
+    <link rel="icon" type="image/svg+xml" href={link('icons/cardrove.svg')}/>
+    <link rel="icon" type="image/png" sizes="32x32" href={link('icons/cardrove-32.png')}/>
     <title>{title} · {brand}</title>
     <script is:inline>try { document.documentElement.dataset.theme = localStorage.getItem('site-theme') || 'system'; } catch {}</script>
   </head>

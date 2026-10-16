@@ -8,7 +8,7 @@ import { openStore, importInto, nextCard, summary, dayKey } from '../server/stor
 import { fixture, zip } from './helpers.mjs';
 test('legacy and modern packages preserve fields, reversed templates, hierarchy and media', async () => {
   for (const modern of [false, true]) {
-    const dir = await mkdtemp(path.join(os.tmpdir(), 'myanki-import-'));
+    const dir = await mkdtemp(path.join(os.tmpdir(), 'cardrove-import-'));
     try {
       const file = await fixture(dir, modern),
         p = await parsePackage(file, dir);
@@ -46,7 +46,7 @@ test('legacy and modern packages preserve fields, reversed templates, hierarchy 
   }
 });
 test('invalid archives and unsafe paths are rejected without touching existing data', async () => {
-  const dir = await mkdtemp(path.join(os.tmpdir(), 'myanki-bad-'));
+  const dir = await mkdtemp(path.join(os.tmpdir(), 'cardrove-bad-'));
   try {
     const file = path.join(dir, 'bad.apkg');
     await writeFile(file, zip([['../../outside', 'bad']]));

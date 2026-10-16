@@ -2,15 +2,15 @@
 
 Satu instalasi untuk satu pemilik, dengan beberapa perangkat yang memakai deck dan progress bersama. Setiap orang yang menyalin repo membuat proyek Supabase dan Pages sendiri. Pembuat Cardrove tidak mengoperasikan server pusat.
 
-Panduan lengkap juga tersedia di [handbook Cardrove](https://ardanngrha.github.io/cardrove/docs/). Nama internal `myanki-api`, tabel `myanki_*`, dan format `.myanki.zip` dipertahankan untuk kompatibilitas data versi awal.
+Panduan lengkap tersedia di [handbook Cardrove](https://ardanngrha.github.io/cardrove/docs/). Identifier database versi awal dipertahankan agar koleksi tetap kompatibel. API aktif, file backup baru, dan tampilan memakai nama Cardrove.
 
 ## Layanan
 
 - Cloudflare Pages menyajikan frontend Svelte/Vite sebagai file statis.
 - Supabase PostgreSQL menyimpan deck, catatan, progress FSRS, pengaturan, dan daftar perangkat.
 - Supabase Auth menyimpan sesi perangkat. Pengguna menghubungkan perangkat sekali lewat kode/QR; tidak perlu email/password harian. Backend membuat identitas internal per perangkat. Kredensial internal tidak diberikan ke frontend.
-- Edge Function `myanki-api` memeriksa sesi dan persetujuan perangkat sebelum setiap operasi. Perubahan review memakai transaksi, versi progress dan ID operasi. Database dan Storage juga menerapkan akses per perangkat.
-- Storage `myanki-media` bersifat privat. Media dibuka melalui tautan sementara selama 10 menit.
+- Edge Function `cardrove-api` memeriksa sesi dan persetujuan perangkat sebelum setiap operasi. Perubahan review memakai transaksi, versi progress dan ID operasi. Database dan Storage juga menerapkan akses per perangkat.
+- Bucket Storage bersifat privat dan dikelola migrasi. Media dibuka melalui tautan sementara selama 10 menit.
 
 ```mermaid
 flowchart LR
@@ -32,7 +32,7 @@ Dengan Supabase CLI yang sudah terpasang:
 supabase login
 supabase link --project-ref YOUR_PROJECT_REF
 supabase db push
-supabase functions deploy myanki-api --no-verify-jwt
+supabase functions deploy cardrove-api --no-verify-jwt
 ```
 
 Migrasi ada di `supabase/migrations`. `--no-verify-jwt` diperlukan karena endpoint pairing pertama belum mempunyai sesi. Function tetap memverifikasi bearer token dan daftar perangkat di dalam handler untuk setiap endpoint privat. Jangan menghapus pemeriksaan itu. Default server-side environment Supabase sudah menyediakan kunci administratif bagi function, sehingga tidak perlu menyalinnya ke repo.
@@ -87,15 +87,19 @@ node scripts/create-connect-token.mjs
 
 Buka file `work/setup/setup.sql` dan jalankan melalui SQL Editor proyek Supabase milikmu. Masukkan kode dari `work/setup/connect-code.txt` di aplikasi. Berlaku satu kali, selama 30 menit sejak SQL dijalankan. File setup diabaikan Git. Jangan membagikan kode setup atau QR pairing ke publik.
 
-Bootstrap hanya bekerja bila belum ada perangkat aktif. Setelah terhubung, impor deck `.apkg`. Untuk HP/PC berikutnya, buka Pengaturan → Hubungkan perangkat baru pada perangkat yang sudah terhubung. Pindai QR atau masukkan kode dalam lima menit.
+Bootstrap hanya bekerja bila belum ada perangkat aktif. Setelah terhubung, isi nama pemilik dan workspace. Salin atau unduh kode akses tetap, lalu konfirmasi bahwa kode sudah disimpan. Kode tetap berlaku sampai diganti melalui Pengaturan. Untuk perangkat lain, gunakan kode tetap tersebut atau QR sementara yang berlaku lima menit.
 
-Jika semua perangkat hilang, melalui SQL Editor pemilik cabut perangkat lama dahulu, lalu buat kode setup baru. Deck dan progress tetap tersimpan.
+Jika semua perangkat dan kode akses hilang, buat SQL pemulihan. Deck dan progress tetap tersimpan. SQL ini membatalkan kode akses lama dan memutus semua perangkat.
 
-```sql
-UPDATE public.myanki_devices SET revoked_at=now() WHERE revoked_at IS NULL;
+```sh
+node scripts/create-connect-token.mjs --recover
 ```
 
-Operasi pemulihan tersebut hanya dilakukan pemilik yang memiliki akses dashboard Supabase.
+Tinjau dan jalankan SQL yang dihasilkan melalui dashboard Supabase pemilik, lalu gunakan kode setup baru. Jangan bagikan file setup. Di Pengaturan, pemilik juga bisa mengganti nama workspace atau mereset jadwal dan riwayat belajar dengan mengetik nama workspace sebagai konfirmasi. Deck, catatan, dan media tidak dihapus saat reset.
+
+## Pasang di layar utama
+
+iPhone/iPad: Safari → Bagikan → Tambahkan ke Layar Utama. Aktifkan Buka sebagai App Web bila tersedia. Android: menu Chrome → Instal aplikasi atau Tambahkan ke layar utama. Ikon C dan mode aplikasi mandiri sudah disediakan. Belajar tetap memerlukan koneksi; data privat tidak disimpan oleh service worker. Instalasi di luar localhost membutuhkan HTTPS.
 
 ## Alur impor dan belajar
 
@@ -108,7 +112,7 @@ Operasi pemulihan tersebut hanya dilakukan pemilik yang memiliki akses dashboard
 
 ## Backup dan pemulihan
 
-Pengaturan → Unduh backup lengkap menghasilkan `.myanki.zip`: snapshot deck/catatan/template, progress, semua riwayat termasuk undo, pengaturan dan media. Sesi dan kode perangkat tidak disertakan. Snapshot metadata diambil dalam satu query database agar review yang sedang berjalan tidak mencampur state.
+Pengaturan → Unduh backup lengkap menghasilkan `.cardrove.zip`: snapshot deck/catatan/template, progress, semua riwayat termasuk undo, pengaturan dan media. Sesi dan kode perangkat tidak disertakan. Snapshot metadata diambil dalam satu query database agar review yang sedang berjalan tidak mencampur state.
 
 Pulihkan melalui Pengaturan di instalasi **tanpa kartu** yang sudah memiliki perangkat pemilik. Browser memeriksa hash media, mengunggah bertahap, lalu mengaktifkan data dan progress dalam satu transaksi. Pemulihan ke koleksi berisi kartu ditolak untuk menghindari penggantian progress tanpa sengaja. Riwayat yang dipulihkan diatribusikan ke perangkat pemulih.
 

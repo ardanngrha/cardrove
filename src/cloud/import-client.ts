@@ -1,4 +1,4 @@
-import { cloud, cloudApi } from './api';
+import { cloud, cloudApi, mediaBucket } from './api';
 import { t } from '../preferences.svelte';
 export async function importDeck(file: File, onProgress: (message: string) => void = () => {}) {
   const worker = new Worker(new URL('./import.worker.ts', import.meta.url), { type: 'module' });
@@ -87,7 +87,7 @@ export async function importDeck(file: File, onProgress: (message: string) => vo
         if (data.type === 'media') {
           if (!existing.has(data.disk)) {
             const uploaded = await cloud!.storage
-              .from('myanki-media')
+              .from(mediaBucket())
               .upload(data.disk, new Blob([data.bytes], { type: data.mime }), {
                 contentType: data.mime,
                 cacheControl: '86400',

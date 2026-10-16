@@ -1,6 +1,7 @@
 /// <reference lib="webworker" />
 import { ZipReader, BlobReader, Uint8ArrayWriter } from '@zip.js/zip.js';
 import initSqlJs from 'sql.js';
+import { legacyBackupName, legacyBackupFormat } from './legacy';
 import wasmUrl from 'sql.js/dist/sql-wasm.wasm?url';
 import { decompress } from 'fzstd';
 
@@ -68,7 +69,7 @@ self.onmessage = async ({ data }) => {
   let db: any;
   try {
     const file: File = data.file;
-    if (/\.myanki\.zip$/i.test(file.name)) {
+    if (/\.cardrove\.zip$/i.test(file.name) || legacyBackupName.test(file.name)) {
       await restore(file);
       return;
     }
@@ -325,7 +326,7 @@ async function restore(file: File) {
       return e.getData(new Uint8ArrayWriter(), { checkSignature: true });
     };
     const saved = JSON.parse(str(await read('backup.json', 64 * 1024 ** 2)));
-    if (saved.format !== 'MyAnkiBackup' || saved.version !== 1)
+    if (!['CardroveBackup', legacyBackupFormat].includes(saved.format) || saved.version !== 1)
       throw Error('Format backup tidak didukung.');
     const kinds = ['models', 'decks', 'notes', 'cards', 'media', 'progress', 'reviews'];
     for (const kind of kinds)

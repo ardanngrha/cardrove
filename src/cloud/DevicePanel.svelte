@@ -68,7 +68,7 @@
     await act(async () =>
       download(
         new Blob([JSON.stringify(await api('/export'))], { type: 'application/json' }),
-        'myanki-progress-' + new Date().toISOString().slice(0, 10) + '.json',
+        'cardrove-progress-' + new Date().toISOString().slice(0, 10) + '.json',
       ),
     );
   }
@@ -76,7 +76,7 @@
     await act(async () => {
       const { createBackup } = await import('./backup');
       const blob = await createBackup((text) => (backupProgress = text));
-      download(blob, 'myanki-' + new Date().toISOString().slice(0, 10) + '.myanki.zip');
+      download(blob, 'cardrove-' + new Date().toISOString().slice(0, 10) + '.cardrove.zip');
       backupProgress = t('Full backup downloaded.', 'Backup lengkap selesai diunduh.');
     });
   }
@@ -253,7 +253,7 @@
   <label
     >{t('Restore a backup', 'Pulihkan backup')}<input
       type="file"
-      accept=".myanki.zip"
+      accept=".zip"
       disabled={busy}
       onchange={(event) => (restoreFile = event.currentTarget.files?.[0] || null)}
     /></label

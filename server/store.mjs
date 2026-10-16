@@ -3,6 +3,7 @@ import { mkdirSync } from 'node:fs';
 import path from 'node:path';
 import { createHash } from 'node:crypto';
 import { createEmptyCard, fsrs } from 'ts-fsrs';
+import { migrateLegacyDatabase } from './legacy.mjs';
 export const hash = (x) => createHash('sha256').update(x).digest('hex');
 export const scheduler = fsrs({ enable_fuzz: false, request_retention: 0.9 });
 export function cardState(json) {
@@ -22,7 +23,8 @@ export function dayKey(date = new Date(), tz = 'Asia/Jakarta') {
 }
 export function openStore(dir) {
   mkdirSync(dir, { recursive: true });
-  const db = new DatabaseSync(path.join(dir, 'myanki.sqlite'));
+  migrateLegacyDatabase(dir);
+  const db = new DatabaseSync(path.join(dir, 'cardrove.sqlite'));
   db.exec(`PRAGMA journal_mode=WAL; PRAGMA foreign_keys=ON;
   CREATE TABLE IF NOT EXISTS users(id INTEGER PRIMARY KEY, name TEXT NOT NULL UNIQUE, password TEXT NOT NULL, settings TEXT NOT NULL DEFAULT '{"dailyNew":20,"goal":20,"timezone":"Asia/Jakarta"}');
   CREATE TABLE IF NOT EXISTS sessions(token TEXT PRIMARY KEY, user_id INTEGER NOT NULL REFERENCES users(id), expires INTEGER NOT NULL);
@@ -39,6 +41,19 @@ export function openStore(dir) {
   CREATE INDEX IF NOT EXISTS progress_due ON progress(user_id,due);
   CREATE INDEX IF NOT EXISTS reviews_user_day ON reviews(user_id,day);
   `);
+  const columns = new Set(
+    db
+      .prepare('PRAGMA table_info(users)')
+      .all()
+      .map((c) => c.name),
+  );
+  for (const [name, type] of [
+    ['workspace_name', 'TEXT'],
+    ['access_hash', 'TEXT'],
+    ['access_saved', 'INTEGER NOT NULL DEFAULT 0'],
+  ]) {
+    if (!columns.has(name)) db.exec(`ALTER TABLE users ADD COLUMN ${name} ${type}`);
+  }
   return db;
 }
 export function transaction(db, fn) {

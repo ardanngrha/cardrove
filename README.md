@@ -38,7 +38,7 @@ npm ci
 npm run dev
 ```
 
-Open `http://localhost:4317`, create your local account, and import a deck. The ignored `data/` directory holds your collection. Keep an independent backup.
+Open `http://localhost:4317` and enter the first-owner setup code printed in your server terminal. Enter your name and a workspace name, then copy or download your generated access code before continuing. The ignored `data/` directory holds your collection. Keep an independent backup.
 
 For a production build:
 
@@ -54,10 +54,14 @@ The server listens on your network by default. Set `HOST=127.0.0.1` for access f
 The static app runs on **Cloudflare Pages**, with **Supabase PostgreSQL, Auth, Edge Functions, and private Storage** behind it. Every person who clones Cardrove creates their own projects. The author does not operate a central sync server.
 
 1. Create a Supabase Free project and apply the migrations in `supabase/migrations/`.
-2. Deploy the `myanki-api` Edge Function. Its name is retained for compatibility.
+2. Deploy the `cardrove-api` Edge Function.
 3. Copy `.env.example` to `.env.cloud.local` and supply your project URL and **publishable** key. Never put a secret or service-role key in a `VITE_` variable.
 4. Build with `npm run build:cloud` and deploy `dist/` to your Pages project.
-5. Generate the first-device setup code with `node scripts/create-connect-token.mjs`. Run its generated SQL in your project’s SQL Editor, then connect the device.
+5. Generate the first-device setup code with `node scripts/create-connect-token.mjs`. Run its generated SQL in your project's SQL Editor, then connect the device. Enter your name and workspace name, then save the generated permanent access code. Never share this code publicly.
+
+The permanent access code connects additional devices until you replace it in Settings. Temporary five-minute QR codes remain available. Settings also lets you rename your workspace and reset study progress with a typed confirmation. Reset clears review history and schedules while keeping decks, notes, and media.
+
+On iPhone/iPad, use Safari's Share menu and **Add to Home Screen**. On Android, use Chrome's **Install app** or **Add to Home screen**. The web manifest, C icon, and standalone display are included. Installation does not enable offline study; the service worker stores no private responses. A separate installed browser context may need its own device connection.
 
 The [full setup guide](https://ardanngrha.github.io/cardrove/docs/self-host/) covers commands, pairing, recovery, hosting quotas, and backups. An Indonesian deployment guide is also available in [docs/DEPLOY.md](docs/DEPLOY.md).
 
@@ -89,6 +93,8 @@ Deck content belongs to its authors. This repository includes no personal decks,
 Svelte 5, TypeScript, and Vite power the app. Imports use a worker with SQLite/WASM; backup and QR dependencies load on demand. Astro generates the public site as static HTML with small scripts for the interactive demo and appearance controls. npm workspaces share one lockfile.
 
 The app source lives in `src/`, the local API in `server/`, cloud schema and API in `supabase/`, and the public site in `site/`. `DESIGN.md` records the editorial direction. [Anti-slop](https://github.com/miqdadbadjuber/anti-slop) guided the design during implementation.
+
+[SECURITY.md](SECURITY.md) describes access controls, private-code handling, deployment requirements, and known boundaries. Database identifiers from earlier versions are preserved to avoid breaking existing collections; public branding and the active API use Cardrove.
 
 GitHub Actions runs checks and builds, and publishes the public site to GitHub Pages after successful checks on `main`. Cloud app deployment is separate; use Cloudflare Git integration for your own fork or a manual Wrangler deployment. No production credentials are needed for the public website or its CI.
 

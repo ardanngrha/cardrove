@@ -4,6 +4,17 @@ export const cloudMode = import.meta.env.VITE_BACKEND === 'supabase';
 export const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
 const publicKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || '';
 export const cloud = cloudMode ? createClient(supabaseUrl, publicKey) : null;
+let bucket = '';
+export const mediaBucket = () => {
+  if (!bucket)
+    throw Error(
+      t(
+        'Media storage is not ready. Reload the page.',
+        'Penyimpanan media belum siap. Muat ulang halaman.',
+      ),
+    );
+  return bucket;
+};
 export const initialClaim = new URLSearchParams(location.hash.slice(1)).get('connect') || '';
 if (initialClaim) history.replaceState(null, '', location.pathname + location.search);
 export async function cloudApi(route: string, options: RequestInit = {}): Promise<any> {
@@ -22,7 +33,7 @@ export async function cloudApi(route: string, options: RequestInit = {}): Promis
     });
   }
   const session = (await cloud.auth.getSession()).data.session;
-  const response = await fetch(supabaseUrl + '/functions/v1/myanki-api' + route, {
+  const response = await fetch(supabaseUrl + '/functions/v1/cardrove-api' + route, {
     ...options,
     body,
     signal: options.signal ?? AbortSignal.timeout(45000),
@@ -34,6 +45,7 @@ export async function cloudApi(route: string, options: RequestInit = {}): Promis
     },
   });
   const data = await response.json();
+  if (route === '/session' && response.ok && data.user?.mediaBucket) bucket = data.user.mediaBucket;
   if (!response.ok)
     throw Object.assign(
       Error(data.error || t('Request failed. Please try again.', 'Permintaan gagal. Coba lagi.')),

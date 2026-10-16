@@ -9,7 +9,10 @@ work/
 site/.astro/
 .wrangler/
 .supabase/
+supabase/.temp/
 .agents/
 *.apkg
 *.myanki.zip
+*.cardrove.zip
+cardrove-access-code*.txt
 *.sqlite*

@@ -5,7 +5,7 @@ import { createHash } from 'node:crypto';
 import { parsePackage, commitMedia } from '../server/import.mjs';
 import { openStore, importInto } from '../server/store.mjs';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..'),
-  dir = path.resolve(process.env.MYANKI_DATA_DIR ?? path.join(root, 'data')),
+  dir = path.resolve(process.env.CARDROVE_DATA_DIR ?? path.join(root, 'data')),
   db = openStore(dir);
 try {
   for (const file of process.argv.slice(2)) {

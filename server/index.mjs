@@ -6,6 +6,8 @@ import { rm } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { networkInterfaces } from 'node:os';
+import { appCsp } from './security.mjs';
+import { legacyDataDir, legacyHeader, legacyCookie } from './legacy.mjs';
 import { parsePackage, commitMedia } from './import.mjs';
 import {
   openStore,
@@ -21,7 +23,9 @@ import {
 } from './store.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-export const dataDir = path.resolve(process.env.MYANKI_DATA_DIR ?? path.join(root, 'data'));
+export const dataDir = path.resolve(
+  process.env.CARDROVE_DATA_DIR ?? legacyDataDir() ?? path.join(root, 'data'),
+);
 const db = openStore(dataDir),
   app = express();
 app.disable('x-powered-by');
@@ -41,12 +45,30 @@ const validPassword = (password, stored) => {
   const [salt, hex] = stored.split(':');
   return timingSafeEqual(Buffer.from(hex, 'hex'), scryptSync(password, salt, 64));
 };
+const bootstrapCode = process.env.CARDROVE_SETUP_CODE || randomBytes(32).toString('hex');
+const profile = (user) => ({
+  name: user.name,
+  workspaceName: user.workspace_name || 'Cardrove',
+  needsOnboarding: !user.access_saved,
+});
+const validNames = (name, workspaceName) =>
+  typeof name === 'string' &&
+  name.trim().length >= 1 &&
+  name.trim().length <= 64 &&
+  typeof workspaceName === 'string' &&
+  workspaceName.trim().length >= 1 &&
+  workspaceName.trim().length <= 64;
 app.use((req, res, next) => {
   res.set({
     'X-Content-Type-Options': 'nosniff',
     'Referrer-Policy': 'same-origin',
-    'X-Frame-Options': 'SAMEORIGIN',
+    'X-Frame-Options': 'DENY',
+    'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
   });
+  if (!process.argv.includes('--dev')) res.set('Content-Security-Policy', appCsp());
+  if (['/', '/index.html', '/sw.js', '/manifest.webmanifest'].includes(req.path))
+    res.set('Cache-Control', 'no-cache');
+  if (req.path === '/sw.js') res.set('Service-Worker-Allowed', '/');
   if (req.path.startsWith('/api')) res.set('Cache-Control', 'no-store');
   if (!['GET', 'HEAD', 'OPTIONS'].includes(req.method)) {
     const origin = req.get('origin');
@@ -58,17 +80,19 @@ app.use((req, res, next) => {
         throw error('Origin tidak valid.', 403);
       }
       if (originHost !== req.get('host')) throw error('Permintaan lintas situs ditolak.', 403);
-    } else if (!req.get('x-myanki')) throw error('Header permintaan tidak valid.', 403);
+    } else if (!req.get('x-cardrove') && !legacyHeader(req))
+      throw error('Header permintaan tidak valid.', 403);
   }
   next();
 });
 app.use(express.json({ limit: '2mb' }));
 app.use('/api', (req, res, next) => {
-  const raw = (req.headers.cookie ?? '')
-    .split(';')
-    .map((x) => x.trim())
-    .find((x) => x.startsWith('myanki='))
-    ?.slice(7);
+  const raw =
+    (req.headers.cookie ?? '')
+      .split(';')
+      .map((x) => x.trim())
+      .find((x) => x.startsWith('cardrove='))
+      ?.slice(9) || legacyCookie(req.headers.cookie);
   if (raw) {
     const session = db
       .prepare(
@@ -83,7 +107,7 @@ const auth = (req, res, next) => (req.user ? next() : next(error('Silakan masuk 
 app.get('/api/session', (req, res) =>
   res.json({
     setup: !db.prepare('SELECT id FROM users LIMIT 1').get(),
-    user: req.user ? { name: req.user.name } : null,
+    user: req.user ? profile(req.user) : null,
   }),
 );
 const attempts = new Map();
@@ -93,18 +117,19 @@ app.post('/api/auth', (req, res) => {
   const a = attempts.get(key);
   if (a && a.until > now && a.count >= 10)
     throw error('Terlalu banyak percobaan. Coba lagi dalam 15 menit.', 429);
-  const { name, password } = req.body ?? {};
-  if (
-    typeof name !== 'string' ||
-    name.trim().length < 2 ||
-    name.length > 64 ||
-    typeof password !== 'string' ||
-    password.length < 8 ||
-    password.length > 256
-  )
+  let { name, password, setupCode } = req.body ?? {};
+  const first = !db.prepare('SELECT id FROM users LIMIT 1').get();
+  if (first && digest(String(setupCode || password || '')) !== digest(bootstrapCode))
+    throw error('Kode penyiapan belum cocok.', 403);
+  if (first && !name) name = 'Owner';
+  if (typeof password !== 'string' || password.length < 8 || password.length > 256)
     throw error('Nama minimal 2 karakter dan kata sandi minimal 8 karakter.');
-  let user = db.prepare('SELECT * FROM users WHERE name=?').get(name.trim());
-  if (!db.prepare('SELECT id FROM users LIMIT 1').get()) {
+  let user = db.prepare('SELECT * FROM users WHERE access_hash=?').get(digest(password));
+  if (!user && typeof name === 'string')
+    user = db.prepare('SELECT * FROM users WHERE name=? AND access_hash IS NULL').get(name.trim());
+  if (first) {
+    if (typeof name !== 'string' || !name.trim() || name.length > 64)
+      throw error('Nama tidak valid.');
     db.prepare('INSERT INTO users(name,password) VALUES(?,?)').run(
       name.trim(),
       passwordHash(password),
@@ -112,6 +137,12 @@ app.post('/api/auth', (req, res) => {
     user = db.prepare('SELECT * FROM users WHERE name=?').get(name.trim());
   }
   if (!user || !validPassword(password, user.password)) {
+    if (attempts.size >= 10000)
+      for (const [address, attempt] of attempts) {
+        if (attempt.until <= now) attempts.delete(address);
+      }
+    if (attempts.size >= 10000 && !attempts.has(key))
+      throw error('Terlalu banyak percobaan. Coba lagi nanti.', 429);
     attempts.set(key, { count: (a?.until > now ? a.count : 0) + 1, until: now + 15 * 60000 });
     throw error('Nama atau kata sandi belum cocok.', 401);
   }
@@ -119,21 +150,80 @@ app.post('/api/auth', (req, res) => {
   db.prepare('DELETE FROM sessions WHERE expires<=?').run(now);
   const token = randomBytes(32).toString('hex');
   db.prepare('INSERT INTO sessions VALUES(?,?,?)').run(digest(token), user.id, now + 30 * 86400000);
-  res.cookie('myanki', token, {
+  res.cookie('cardrove', token, {
     httpOnly: true,
     sameSite: 'lax',
     secure: req.secure,
     maxAge: 30 * 86400000,
   });
-  res.json({ name: user.name });
+  res.json(profile(user));
+});
+app.post('/api/workspace/setup', auth, (req, res) => {
+  const { name, workspaceName } = req.body ?? {};
+  if (req.user.access_saved) throw error('Workspace sudah disiapkan.', 409);
+  if (!validNames(name, workspaceName)) throw error('Nama harus 1 sampai 64 karakter.');
+  const token = randomBytes(32).toString('hex');
+  db.prepare('UPDATE users SET name=?,workspace_name=?,access_hash=?,password=? WHERE id=?').run(
+    name.trim(),
+    workspaceName.trim(),
+    digest(token),
+    passwordHash(token),
+    req.user.id,
+  );
+  res.json({ token });
+});
+app.patch('/api/workspace', auth, (req, res) => {
+  const { name, workspaceName } = req.body ?? {};
+  if (!validNames(name, workspaceName)) throw error('Nama harus 1 sampai 64 karakter.');
+  db.prepare('UPDATE users SET name=?,workspace_name=? WHERE id=?').run(
+    name.trim(),
+    workspaceName.trim(),
+    req.user.id,
+  );
+  res.json({ ok: true });
+});
+app.post('/api/access-code', auth, (req, res) => {
+  if (req.body?.confirm !== (req.user.workspace_name || 'Cardrove'))
+    throw error('Nama workspace belum cocok.');
+  const token = randomBytes(32).toString('hex');
+  db.prepare('UPDATE users SET access_hash=?,password=? WHERE id=?').run(
+    digest(token),
+    passwordHash(token),
+    req.user.id,
+  );
+  res.json({ token });
+});
+app.post('/api/workspace/confirm-access', auth, (req, res) => {
+  if (typeof req.body?.token !== 'string' || digest(req.body.token) !== req.user.access_hash)
+    throw error('Kode sudah diganti. Buat kode baru.', 409);
+  db.prepare('UPDATE users SET access_saved=1 WHERE id=?').run(req.user.id);
+  res.json({ ok: true });
+});
+app.post('/api/progress/reset', auth, (req, res) => {
+  if (req.body?.confirm !== (req.user.workspace_name || 'Cardrove'))
+    throw error('Nama workspace belum cocok.');
+  const now = Date.now(),
+    empty = JSON.stringify(cardState(null));
+  const total = transaction(db, () => {
+    const result = db
+      .prepare(
+        'INSERT INTO progress(user_id,card_id,state,due,reps,version) SELECT ?,id,?,?,0,1 FROM cards WHERE true ON CONFLICT(user_id,card_id) DO UPDATE SET state=excluded.state,due=excluded.due,reps=0,version=progress.version+1',
+      )
+      .run(req.user.id, empty, now);
+    db.prepare('DELETE FROM reviews WHERE user_id=?').run(req.user.id);
+    return result.changes;
+  });
+  res.json({ cards: total });
 });
 app.post('/api/logout', auth, (req, res) => {
-  const raw = (req.headers.cookie ?? '')
-    .split(';')
-    .map((x) => x.trim())
-    .find((x) => x.startsWith('myanki='))
-    ?.slice(7);
+  const raw =
+    (req.headers.cookie ?? '')
+      .split(';')
+      .map((x) => x.trim())
+      .find((x) => x.startsWith('cardrove='))
+      ?.slice(9) || legacyCookie(req.headers.cookie);
   if (raw) db.prepare('DELETE FROM sessions WHERE token=?').run(digest(raw));
+  res.clearCookie('cardrove');
   res.clearCookie('myanki');
   res.json({ ok: true });
 });
@@ -338,14 +428,16 @@ app.get('/api/media/:name', auth, (req, res) => {
   };
   res.set({
     'Content-Type': types[ext] ?? 'application/octet-stream',
-    'Content-Security-Policy': "default-src 'none'; style-src 'unsafe-inline'; sandbox",
+    'Content-Security-Policy':
+      "default-src 'none'; style-src 'unsafe-inline'" +
+      (types[ext]?.startsWith('audio/') ? '' : '; sandbox'),
     'Cache-Control': 'private,max-age=86400',
   });
   res.sendFile(path.join(dataDir, 'media', media.disk));
 });
 app.get('/api/export', auth, (req, res) => {
   const data = {
-    format: 'MyAnki',
+    format: 'Cardrove',
     version: 1,
     exportedAt: new Date().toISOString(),
     settings: JSON.parse(req.user.settings),
@@ -356,7 +448,7 @@ app.get('/api/export', auth, (req, res) => {
       .prepare('SELECT card_id,rating,at,day,elapsed,log FROM reviews WHERE user_id=?')
       .all(req.user.id),
   };
-  res.attachment('myanki-progress.json').json(data);
+  res.attachment('cardrove-progress.json').json(data);
 });
 app.use('/api', (req, res) => res.status(404).json({ error: 'Halaman tidak ditemukan.' }));
 if (process.argv.includes('--dev')) {
@@ -370,18 +462,18 @@ if (process.argv.includes('--dev')) {
 app.use((err, req, res, next) => {
   if (res.headersSent) return next(err);
   console.error(err.message);
-  res
-    .status(err.status ?? (err instanceof multer.MulterError ? 400 : 400))
-    .json({
-      error:
-        err.code === 'LIMIT_FILE_SIZE'
-          ? 'Ukuran deck maksimal 512 MB.'
-          : (err.message ?? 'Terjadi kesalahan.'),
-    });
+  res.status(err.status ?? (err instanceof multer.MulterError ? 400 : 400)).json({
+    error:
+      err.code === 'LIMIT_FILE_SIZE'
+        ? 'Ukuran deck maksimal 512 MB.'
+        : (err.message ?? 'Terjadi kesalahan.'),
+  });
 });
 const port = Number(process.env.PORT ?? 4317),
   host = process.env.HOST ?? '0.0.0.0';
 const server = app.listen(port, host, () => {
+  if (!db.prepare('SELECT id FROM users LIMIT 1').get())
+    console.log('First-owner setup code (keep private): ' + bootstrapCode);
   console.log(`Cardrove ready: http://localhost:${port}`);
   for (const list of Object.values(networkInterfaces()))
     for (const n of list ?? [])
