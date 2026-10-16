@@ -1655,3 +1655,26 @@ summary {
     scroll-behavior: auto !important;
   }
 }
+
+.setup-help {
+  margin-block: 1.5rem;
+  padding-block: 1rem;
+  border-block: 1px solid var(--line);
+}
+.setup-help summary {
+  cursor: pointer;
+  min-height: 2.75rem;
+  display: list-item;
+  align-content: center;
+}
+.setup-help p {
+  margin-block: 0.75rem 0;
+  color: var(--muted);
+  line-height: 1.6;
+}
+.setup-help a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  text-underline-offset: 0.2em;
+}

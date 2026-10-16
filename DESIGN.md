@@ -2,7 +2,7 @@
 
 ## Owner brief
 
-The owner selected: “Editorial modern, tenang tapi berkarakter”. The app and public site should feel modern, clean, and carefully animated. The product is for learning any subject or language on phones and computers. The new name remains pending owner approval.
+The owner selected: “Editorial modern, tenang tapi berkarakter”. The app and public site should feel modern, clean, and carefully animated. The product is for learning any subject or language on phones and computers. The owner approved the name Cardrove.
 
 ## Implementation decisions
 

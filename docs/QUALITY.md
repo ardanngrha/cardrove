@@ -15,30 +15,30 @@ Verified on 16 October 2026. This is a bounded implementation review, not an acc
 
 Browser checks used a disposable local collection and original sample notes. Production checks were limited to opening the workspace and reading settings. Device mutations used a local mock panel, not the owner's devices.
 
-| Control or flow | Observed result |
-| --- | --- |
-| Local sign-in | Existing disposable account opened its collection |
-| Study, Library, Browse, Progress, Settings navigation | Corresponding page and heading opened |
-| Begin review, reveal, Good, next, undo | Answer appeared; next card loaded; undo restored the prior review state |
-| Card preview, show answer, Escape | Reversed card showed `belajar`, then `学ぶ`; Escape closed the dialog |
-| Browse search | Non-matching query produced the explicit empty state |
-| Deck filter | Cell biology reduced seven sample cards to one |
-| Edit note and save | Original Arabic sample's saved answer appeared in Browse |
-| Import picker, import, open library | Four original sample cards imported; completion counts and updated library appeared |
-| Daily allowance, goal, save | Saved values survived refresh and the home goal changed to 15 |
-| Language selectors | English/Indonesian labels and document language changed |
-| Theme controls | Light, dark, and device-following appearances were inspected |
-| Daily activity disclosure | Accessible daily values expanded below the chart |
-| Mock connect, expiry, fresh code, copy | QR and countdown appeared; expired state replaced the code; fresh code appeared; copy changed to Copied |
-| Mock revoke, keep connected, disconnect | Confirmation opened; cancel kept the device; confirm removed only the sample phone |
-| Mock cancel import | The sample unfinished import disappeared |
-| Mock progress archive | Browser downloaded the sample JSON archive |
-| Full-backup button in unconfigured mock | Lazy backup loaded and displayed a configuration error; controls became available again |
-| Restore file picker and submit | Accepted the disposable invalid backup selection and entered the busy state; successful cloud restore was not repeated against the live collection |
-| Landing demo reveal and next | Spanish answer appeared; next switched to the biology sample |
-| Website theme | Theme switched through the keyboard-operated control |
-| Handbook and chapter link | Handbook and compatibility chapter opened |
-| Phone chapter menu | Expanded to show all seven real chapter links |
+| Control or flow                                       | Observed result                                                                                                                                    |
+| ----------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Local sign-in                                         | Existing disposable account opened its collection                                                                                                  |
+| Study, Library, Browse, Progress, Settings navigation | Corresponding page and heading opened                                                                                                              |
+| Begin review, reveal, Good, next, undo                | Answer appeared; next card loaded; undo restored the prior review state                                                                            |
+| Card preview, show answer, Escape                     | Reversed card showed `belajar`, then `学ぶ`; Escape closed the dialog                                                                              |
+| Browse search                                         | Non-matching query produced the explicit empty state                                                                                               |
+| Deck filter                                           | Cell biology reduced seven sample cards to one                                                                                                     |
+| Edit note and save                                    | Original Arabic sample's saved answer appeared in Browse                                                                                           |
+| Import picker, import, open library                   | Four original sample cards imported; completion counts and updated library appeared                                                                |
+| Daily allowance, goal, save                           | Saved values survived refresh and the home goal changed to 15                                                                                      |
+| Language selectors                                    | English/Indonesian labels and document language changed                                                                                            |
+| Theme controls                                        | Light, dark, and device-following appearances were inspected                                                                                       |
+| Daily activity disclosure                             | Accessible daily values expanded below the chart                                                                                                   |
+| Mock connect, expiry, fresh code, copy                | QR and countdown appeared; expired state replaced the code; fresh code appeared; copy changed to Copied                                            |
+| Mock revoke, keep connected, disconnect               | Confirmation opened; cancel kept the device; confirm removed only the sample phone                                                                 |
+| Mock cancel import                                    | The sample unfinished import disappeared                                                                                                           |
+| Mock progress archive                                 | Browser downloaded the sample JSON archive                                                                                                         |
+| Full-backup button in unconfigured mock               | Lazy backup loaded and displayed a configuration error; controls became available again                                                            |
+| Restore file picker and submit                        | Accepted the disposable invalid backup selection and entered the busy state; successful cloud restore was not repeated against the live collection |
+| Landing demo reveal and next                          | Spanish answer appeared; next switched to the biology sample                                                                                       |
+| Website theme                                         | Theme switched through the keyboard-operated control                                                                                               |
+| Handbook and chapter link                             | Handbook and compatibility chapter opened                                                                                                          |
+| Phone chapter menu                                    | Expanded to show all seven real chapter links                                                                                                      |
 
 The cloud backup/restore engine and owner recovery procedure remain subject to the documented compatibility and size limits. A successful full restore into a separate empty Supabase project was not part of this UI release check. Disabled pagination was checked for the seven-card fixture; a large-collection pagination browser run was not repeated. These are explicit limits on verification, not claims of broken functionality.
 
@@ -144,3 +144,13 @@ The installed iPhone/Android app and the specific failing iPhone audio file have
 The original anti-slop direction and semantic colour system are retained. The new C icon is an original vector letterform requested by the owner. Form disclosures preserve task hierarchy, code-save text describes real access consequences, controls are labelled, and new code/backup filenames are ignored by Git. No new adoption, security certification, offline-study, or memory-performance claim is introduced.
 
 The network-only service worker was also tested with its local server stopped: reloading displayed the bilingual connection-needed page instead of cached private cards. Browser layout metrics for the checked 390-pixel workspace settings showed a 390-pixel content width.
+
+## First-device setup repair
+
+The setup and code-save database functions now target the singleton workspace explicitly, and progress reset targets review IDs explicitly. This preserves the production safe-update guard rather than disabling it. The production migration keeps existing function grants. Setup, code confirmation, the duplicate-setup guard, and reset were exercised against temporary PostgreSQL fixtures inside a rolled-back transaction. Anonymous and browser roles still cannot invoke these privileged functions directly.
+
+Ten automated tests pass, including two new CLI tests for a private setup link whose token matches the SQL hash, restricted file permissions, secret-free console output, safe URL validation, and side-effect-free help. The first-device URL uses a fragment that is removed before connecting. Existing sessions are retained when opening a setup link; normal device codes still require an explicit connection action. The entry screen explains the separate first-owner setup route and links to its exact documentation section.
+
+Design Read remains the calm editorial workspace in DESIGN.md: ENERGY 2 / RHYTHM 2 / MOTION 2. The new disclosure uses the existing index rule and typography to provide first-owner guidance without competing with the device connection action. No decoration or extra animation was introduced. The existing anti-slop gate remains applicable; the added copy describes implemented behaviour and the disclosure has a functional destination.
+
+The follow-up media migration copies objects through the supported Storage API, verifies every original filename, size and MIME type, and compares the bytes of an audio and an image sample. A database guard refuses activation while a source object is missing or mismatched. Bucket selection, import completeness checks, quota accounting and Storage policies now follow the workspace bucket setting. The migration preserves collection rows and study history. Administrative migration tooling uses the authenticated Supabase CLI and keeps the retrieved server credential in memory only.

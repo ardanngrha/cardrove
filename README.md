@@ -57,7 +57,7 @@ The static app runs on **Cloudflare Pages**, with **Supabase PostgreSQL, Auth, E
 2. Deploy the `cardrove-api` Edge Function.
 3. Copy `.env.example` to `.env.cloud.local` and supply your project URL and **publishable** key. Never put a secret or service-role key in a `VITE_` variable.
 4. Build with `npm run build:cloud` and deploy `dist/` to your Pages project.
-5. Generate the first-device setup code with `node scripts/create-connect-token.mjs`. Run its generated SQL in your project's SQL Editor, then connect the device. Enter your name and workspace name, then save the generated permanent access code. Never share this code publicly.
+5. Generate the first-device setup code with `npm run setup:cloud -- --app-url https://YOUR_APP.pages.dev`. Run `work/setup/setup.sql` in your project's SQL Editor, then open the private link in `work/setup/setup-link.txt` to connect the first device. The script creates this link locally; Cloudflare does not generate it. It works once, for 30 minutes after the SQL runs. Enter your name and workspace name, then save the generated permanent access code. Never share this code publicly.
 
 The permanent access code connects additional devices until you replace it in Settings. Temporary five-minute QR codes remain available. Settings also lets you rename your workspace and reset study progress with a typed confirmation. Reset clears review history and schedules while keeping decks, notes, and media.
 
@@ -79,16 +79,16 @@ Deck content belongs to its authors. This repository includes no personal decks,
 
 ## Develop
 
-| Command | Purpose |
-| --- | --- |
-| `npm run dev` | Local app and API |
-| `npm run dev:cloud` | Frontend against your own Supabase project |
-| `npm run dev:site` | Astro landing page and handbook |
-| `npm run check` | Svelte and TypeScript diagnostics |
-| `npm test` | Importer, scheduling, and API tests |
-| `npm run build` | Local app build |
-| `npm run build:cloud` | Cloud app build |
-| `npm run build:site` | Static public site |
+| Command               | Purpose                                    |
+| --------------------- | ------------------------------------------ |
+| `npm run dev`         | Local app and API                          |
+| `npm run dev:cloud`   | Frontend against your own Supabase project |
+| `npm run dev:site`    | Astro landing page and handbook            |
+| `npm run check`       | Svelte and TypeScript diagnostics          |
+| `npm test`            | Importer, scheduling, and API tests        |
+| `npm run build`       | Local app build                            |
+| `npm run build:cloud` | Cloud app build                            |
+| `npm run build:site`  | Static public site                         |
 
 Svelte 5, TypeScript, and Vite power the app. Imports use a worker with SQLite/WASM; backup and QR dependencies load on demand. Astro generates the public site as static HTML with small scripts for the interactive demo and appearance controls. npm workspaces share one lockfile.
 

@@ -82,17 +82,21 @@ Gunakan nama proyek unik bila `cardrove` sudah dipakai. `wrangler.toml` menyedia
 ## 4. Hubungkan perangkat pertama
 
 ```sh
-node scripts/create-connect-token.mjs
+npm run setup:cloud -- --app-url https://YOUR_APP.pages.dev
 ```
 
-Buka file `work/setup/setup.sql` dan jalankan melalui SQL Editor proyek Supabase milikmu. Masukkan kode dari `work/setup/connect-code.txt` di aplikasi. Berlaku satu kali, selama 30 menit sejak SQL dijalankan. File setup diabaikan Git. Jangan membagikan kode setup atau QR pairing ke publik.
+Ganti URL contoh dengan alamat aplikasi hasil deploy. Perintah ini membuat tautan secara lokal di `work/setup/setup-link.txt`, SQL di `work/setup/setup.sql`, dan kode cadangan di `work/setup/connect-code.txt`. Cloudflare tidak membuat tautan ini otomatis.
+
+Jalankan `setup.sql` melalui SQL Editor proyek Supabase milikmu, lalu buka tautan dari `setup-link.txt`. Aplikasi langsung menghubungkan perangkat pertama dan membuka form nama pengguna dan workspace. Setelah itu, simpan kode akses tetap yang dibuat aplikasi. Tautan setup berlaku sekali selama 30 menit sejak SQL dijalankan.
+
+File setup diabaikan Git dan hanya bisa dibaca pemilik file. Jalankan perintah ini di komputer pemilik, bukan log CI publik. Jangan membagikan tautan, kode setup, atau QR pairing. Untuk perangkat berikutnya, gunakan kode akses tetap atau kode sementara dari Pengaturan.
 
 Bootstrap hanya bekerja bila belum ada perangkat aktif. Setelah terhubung, isi nama pemilik dan workspace. Salin atau unduh kode akses tetap, lalu konfirmasi bahwa kode sudah disimpan. Kode tetap berlaku sampai diganti melalui Pengaturan. Untuk perangkat lain, gunakan kode tetap tersebut atau QR sementara yang berlaku lima menit.
 
 Jika semua perangkat dan kode akses hilang, buat SQL pemulihan. Deck dan progress tetap tersimpan. SQL ini membatalkan kode akses lama dan memutus semua perangkat.
 
 ```sh
-node scripts/create-connect-token.mjs --recover
+npm run setup:cloud -- --app-url https://YOUR_APP.pages.dev --recover
 ```
 
 Tinjau dan jalankan SQL yang dihasilkan melalui dashboard Supabase pemilik, lalu gunakan kode setup baru. Jangan bagikan file setup. Di Pengaturan, pemilik juga bisa mengganti nama workspace atau mereset jadwal dan riwayat belajar dengan mengetik nama workspace sebagai konfirmasi. Deck, catatan, dan media tidak dihapus saat reset.
@@ -122,19 +126,30 @@ Batas backup lewat browser adalah 450 MB media dan 64 MB metadata; perangkat den
 
 Diperiksa 16 Oktober 2026; penyedia bisa mengubah paket. [Supabase pricing](https://supabase.com/pricing) dan [Pages limits](https://developers.cloudflare.com/pages/platform/limits/) menjadi acuan terbaru.
 
-| Bagian | Paket Free / batas aplikasi |
-| --- | --- |
-| Database | Supabase 500 MB per proyek; ukuran termasuk indeks dan data internal. Tidak ada meter database langsung dalam UI saat ini. |
-| Media | Supabase 1 GB; Cardrove menolak import bila estimasi penggunaan melebihi 900 MB. |
-| File media | Maksimum 50 MB per objek. |
-| Transfer | Supabase 5 GB egress + 5 GB cached egress; semua browser memakai kuota proyek yang sama. |
-| Edge API | 500.000 invocation termasuk dalam Free. |
-| Proyek | Maksimum dua proyek Free aktif; dapat dijeda setelah satu minggu tidak aktif. |
-| Frontend | Pages Free 500 build/bulan, 20.000 file, maksimum 25 MiB per asset. Deck/media berada di Supabase, sehingga bukan asset Pages. |
-| Import | APKG ≤512 MB, database hasil pembongkaran ≤256 MiB, ≤100.000 kartu per file, ≤10.000 objek media unik. RAM browser bisa menjadi batas lebih awal. |
+| Bagian     | Paket Free / batas aplikasi                                                                                                                       |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Database   | Supabase 500 MB per proyek; ukuran termasuk indeks dan data internal. Tidak ada meter database langsung dalam UI saat ini.                        |
+| Media      | Supabase 1 GB; Cardrove menolak import bila estimasi penggunaan melebihi 900 MB.                                                                  |
+| File media | Maksimum 50 MB per objek.                                                                                                                         |
+| Transfer   | Supabase 5 GB egress + 5 GB cached egress; semua browser memakai kuota proyek yang sama.                                                          |
+| Edge API   | 500.000 invocation termasuk dalam Free.                                                                                                           |
+| Proyek     | Maksimum dua proyek Free aktif; dapat dijeda setelah satu minggu tidak aktif.                                                                     |
+| Frontend   | Pages Free 500 build/bulan, 20.000 file, maksimum 25 MiB per asset. Deck/media berada di Supabase, sehingga bukan asset Pages.                    |
+| Import     | APKG ≤512 MB, database hasil pembongkaran ≤256 MiB, ≤100.000 kartu per file, ≤10.000 objek media unik. RAM browser bisa menjadi batas lebih awal. |
 
 Saat kuota habis, gunakan dashboard untuk menilai pemakaian, kurangi koleksi, atau tunggu reset kuota yang berlaku. Aplikasi tidak melakukan upgrade otomatis. Batas aplikasi 900 MB mencakup media import terputus; membatalkan import menghapus staging records tetapi tidak otomatis menghapus objek media yang telah diunggah. Pembersihan objek yatim dilakukan pemilik melalui Storage dashboard setelah memeriksa bahwa objek tidak dipakai deck atau import aktif.
 
 Satu instance berarti satu pemilik: jangan membagikan kode pairing ke orang yang seharusnya tidak mendapat seluruh deck dan progress. Pencabutan perangkat menghentikan akses baru; media yang sudah diunduh tidak dapat ditarik kembali dan signed URL yang masih berlaku bertahan maksimal 10 menit.
 
 Tidak mendukung JavaScript kartu, Image Occlusion, add-on, LaTeX, nested cloze kompleks, atau seluruh filter Anki. Template disanitasi dan dirender dalam iframe tanpa script. Atribusi dan lisensi deck tetap mengikuti pembuatnya; repo tidak menyertakan deck Jepang pribadi atau database pengguna.
+
+## Upgrade bucket media versi lama
+
+Instalasi baru berakhir dengan bucket privat `cardrove-media`. Untuk instalasi lama yang masih memiliki file di `myanki-media`, migrasi aktivasi sengaja berhenti sampai salinan lengkap tersedia. Jangan mengedit metadata `storage.objects` untuk memindahkan file.
+
+1. Login dengan CLI Supabase resmi. Terapkan migrasi sampai `prepare_cardrove_media`, lalu hentikan import selama pemindahan.
+2. Jalankan `node scripts/migrate-media-bucket.mjs --project-ref YOUR_PROJECT_REF`. Script memakai login CLI untuk mendapatkan akses administratif proyek di memori, menyalin melalui Storage API, mencocokkan nama/ukuran/MIME semua file, dan membandingkan byte sampel audio/gambar. Kunci tidak dicetak atau disimpan.
+3. Jalankan `supabase db push` kembali. Migrasi aktivasi menolak pergantian jika salinan belum lengkap, lalu mengganti referensi dan kebijakan bucket secara atomik.
+4. Reload perangkat yang terhubung. Setelah memverifikasi app dan media, jalankan `node scripts/migrate-media-bucket.mjs --project-ref YOUR_PROJECT_REF --cleanup` untuk memeriksa ulang salinan dan menghapus bucket lama beserta objeknya melalui Storage API.
+
+Gunakan `SUPABASE_CLI` untuk menentukan lokasi executable CLI jika tidak ada di PATH. Jangan menjalankan migrasi administratif ini di browser atau CI publik. Script tidak mengganti nama tabel database maupun menghapus deck atau progress.

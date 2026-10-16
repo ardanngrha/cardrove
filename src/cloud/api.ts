@@ -15,8 +15,11 @@ export const mediaBucket = () => {
     );
   return bucket;
 };
-export const initialClaim = new URLSearchParams(location.hash.slice(1)).get('connect') || '';
-if (initialClaim) history.replaceState(null, '', location.pathname + location.search);
+const entryParams = new URLSearchParams(location.hash.slice(1));
+export const initialSetup = entryParams.has('setup');
+export const initialClaim = entryParams.get('setup') || entryParams.get('connect') || '';
+if (entryParams.has('setup') || entryParams.has('connect'))
+  history.replaceState(null, '', location.pathname + location.search);
 export async function cloudApi(route: string, options: RequestInit = {}): Promise<any> {
   if (!cloud)
     throw Error(t('Cloud backend is not configured.', 'Backend cloud belum dikonfigurasi.'));

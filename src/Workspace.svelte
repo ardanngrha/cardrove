@@ -23,7 +23,7 @@
   import InstallPanel from './InstallPanel.svelte';
   import WorkspaceProfile from './WorkspaceProfile.svelte';
   import { studyShortcut } from './study-shortcuts';
-  import { cloudMode, cloudApi, initialClaim } from './cloud/api';
+  import { cloudMode, cloudApi, initialClaim, initialSetup } from './cloud/api';
   import { preview, type Card } from './render';
   import {
     preferences,
@@ -57,7 +57,7 @@
     needsOnboarding?: boolean;
     deviceId?: string;
   } | null>(null);
-  let setup = $state(false),
+  let setup = $state(cloudMode && initialSetup),
     ready = $state(false),
     busy = $state(false),
     syncing = $state(false);
@@ -428,8 +428,9 @@
       try {
         const session = await api('/session');
         user = session.user;
-        setup = session.setup;
+        setup = cloudMode ? initialSetup : session.setup;
         if (user) await refresh();
+        else if (cloudMode && initialSetup && initialClaim) await login();
       } catch (e) {
         error = (e as Error).message;
       } finally {
@@ -523,19 +524,19 @@
           {setup
             ? t('Settle in.', 'Mulai dari sini.')
             : cloudMode
-              ? t('Continue here.', 'Lanjutkan di sini.')
+              ? t('Connect this device.', 'Hubungkan perangkat ini.')
               : t('Welcome back.', 'Selamat datang kembali.')}
         </h2>
         <p>
           {cloudMode
             ? setup
               ? t(
-                  'Use the setup code supplied by the owner of this installation.',
-                  'Gunakan kode penyiapan dari pemilik instalasi ini.',
+                  'Your private setup link connects your first device. If it has expired, generate a new link from your deployment checkout.',
+                  'Tautan penyiapan privat menghubungkan perangkat pertamamu. Jika kedaluwarsa, buat tautan baru dari folder deployment-mu.',
                 )
               : t(
-                  'Paste your saved access code, a temporary device code, or the first-owner setup code supplied during deployment.',
-                  'Tempel kode akses yang kamu simpan, kode perangkat sementara, atau kode penyiapan pemilik dari proses deploy.',
+                  'Use the access code you saved when setting up your workspace, or a temporary code from a connected device.',
+                  'Gunakan kode akses yang disimpan saat menyiapkan workspace, atau kode sementara dari perangkat yang sudah terhubung.',
                 )
             : setup
               ? t(
@@ -584,6 +585,32 @@
                 : t('Open study space', 'Buka ruang belajar')}<ArrowRight size={17} /></button
           >
         </form>
+        {#if cloudMode}
+          <details class="setup-help">
+            <summary>{t('Just deployed your own copy?', 'Baru selesai deploy sendiri?')}</summary>
+            <p>
+              {t(
+                'Create your private setup link from the repository folder on your computer. It opens the name and workspace form for your first device.',
+                'Buat tautan setup privat dari folder repo di komputermu. Tautan itu membuka form nama dan workspace untuk perangkat pertama.',
+              )}
+            </p>
+            <p>
+              <a
+                href="https://ardanngrha.github.io/cardrove/docs/self-host/#set-up-the-first-device"
+                target="_blank"
+                rel="noopener noreferrer"
+                >{t('Read the first-device setup steps', 'Baca langkah setup perangkat pertama')}
+                <ArrowRight size={14} /></a
+              >
+            </p>
+            <p class="fine-print">
+              {t(
+                'The public address does not grant ownership. Keep your setup link private.',
+                'Alamat publik tidak memberikan kepemilikan. Simpan tautan setup-mu secara privat.',
+              )}
+            </p>
+          </details>
+        {/if}
         <p class="fine-print">
           {cloudMode
             ? t(
