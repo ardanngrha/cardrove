@@ -415,7 +415,7 @@ function Closing() {
   const f = useCurrentFrame(),
     p = enter(f);
   return (
-    <Chapter duration={144} endFade={false}>
+    <Chapter duration={144}>
       <div
         style={{
           position: 'absolute',

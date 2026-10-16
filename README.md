@@ -10,7 +10,7 @@ Import a supported `.apkg`, recall the answer, and let FSRS schedule your next r
 
 [![Watch the 40-second Cardrove feature tour](site/public/media/cardrove-tour-poster.webp)](https://ardanngrha.github.io/cardrove/media/cardrove-tour.mp4)
 
-**[Watch the feature film](https://ardanngrha.github.io/cardrove/#feature-tour)** · [MP4](https://ardanngrha.github.io/cardrove/media/cardrove-tour.mp4) · [Transcript](https://ardanngrha.github.io/cardrove/#feature-tour)
+**[Watch the feature film](https://ardanngrha.github.io/cardrove/#feature-tour)** · [MP4](https://ardanngrha.github.io/cardrove/media/cardrove-tour.mp4)
 
 A silent tour of importing decks, reviewing, keyboard ratings, mobile layout, and workspace controls. It uses original sample cards. The editable Remotion source and local rendering instructions live in [video/](video/). The poster above opens the video; GitHub README does not need a custom video player.
 

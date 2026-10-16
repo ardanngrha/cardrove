@@ -13,7 +13,7 @@ The owner selected: “Editorial modern, tenang tapi berkarakter”. The app and
 - Georgia supplies a literary voice for short headings without a font download. System sans-serif keeps controls familiar and supports the device's language fonts.
 - The repeated identity motif is an index rule and numbered margin, connecting the library, study card, and documentation. No invented logo is needed; use a text wordmark.
 - Decks use rows, not promotional tiles: long imported titles and nested paths need room. Cards are reserved for actual flashcards.
-- Motion explains a change of state: a new card arrives, an answer is revealed, a navigation panel opens. No looping decoration. Respect reduced motion.
+- Motion explains a change of state: a new card arrives, an answer is revealed, a navigation panel opens. The public hero repeats the product film at the owner's request; the app avoids looping decoration. Respect reduced motion.
 - Utility icons explain an action or destination: search, import, review history, settings, theme, and navigation. They never stand in for content or decorate every section.
 - Light and dark themes use semantic tokens. Interface language is independent of deck content; content uses automatic text direction and no assumed Japanese language.
 - Phone navigation becomes a bottom bar. Review ratings stay reachable near the thumb; tablet layouts preserve a compact rail and readable content width.
@@ -23,9 +23,9 @@ The owner selected: “Editorial modern, tenang tapi berkarakter”. The app and
 
 Reading this as: a product introduction for independent learners and self-hosters, in Cardrove's existing calm editorial language, dial ENERGY 2 / RHYTHM 3 / MOTION 2.
 
-The hero pairs the headline and setup action with a real product film. The 40-second, silent English film uses original sample content, chapter numbers, paper, ink, and the existing C monogram. A short typographic opening leads into import, recall and reveal, ratings, connected screens, and workspace settings. Screenshots show the working app, while a persistent sample label identifies the demo collection. Movement follows those actions rather than looping as decoration.
+The hero pairs the headline and setup action with a real product film. The 40-second, silent English film uses original sample content, chapter numbers, paper, ink, and the existing C monogram. A short typographic opening leads into import, recall and reveal, ratings, connected screens, and workspace settings. Screenshots show the working app, while a persistent sample label identifies the demo collection. Movement follows those actions. Matching paper-coloured opening and closing frames let the film repeat without a hard cut.
 
-The website serves a small WebP poster and a native MP4 player with `preload="none"`. Playback is requested by the visitor; a transcript and caption track provide another way to follow the film. Native video controls avoid shipping React or Remotion to website visitors. The left-hand headline sets the hierarchy, and the film supplies evidence for the product's behaviour. The portfolio reuses the poster as a project cover within its existing layout.
+The website serves a small WebP poster and a silent, inline, looping MP4 preview. The owner requested autoplay with no visible player controls or transcript. A full-surface semantic button lets visitors pause or resume with a tap, click, Space, or Enter without adding player chrome. Reduced motion starts on the poster, and offscreen or hidden-page playback pauses. The page's study, ownership, and handbook copy supplies the product explanation outside the animation. Native video avoids shipping React or Remotion to website visitors. The left-hand headline sets the hierarchy, and the film supplies evidence for the product's behaviour. The portfolio reuses the poster as a project cover within its existing layout.
 
 ## Publication boundaries
 

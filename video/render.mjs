@@ -37,7 +37,7 @@ await sharp(posterPng)
   .webp({ quality: 85 })
   .toFile(resolve(proofs, 'cardrove-project.webp'));
 if (process.argv.includes('--stills')) {
-  for (const frame of [70, 155, 265, 350, 465, 690, 920, 1140])
+  for (const frame of [0, 70, 155, 265, 350, 465, 690, 920, 1140, 1199])
     await renderStill({
       serveUrl,
       composition,

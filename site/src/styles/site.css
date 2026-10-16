@@ -279,6 +279,21 @@ h2 em {
   display: block;
   background: #f7f5f0;
 }
+.film-toggle {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  text-align: inherit;
+}
+.film-toggle:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: -5px;
+}
 .feature-film figcaption {
   display: flex;
   justify-content: space-between;
@@ -286,28 +301,6 @@ h2 em {
   padding-top: 13px;
   color: var(--muted);
   font-size: 10px;
-}
-.film-transcript {
-  margin-top: 12px;
-  color: var(--muted);
-  font-size: 12px;
-}
-.film-transcript summary {
-  cursor: pointer;
-  min-height: 44px;
-  align-content: center;
-  text-decoration: underline;
-  text-underline-offset: 4px;
-}
-.film-transcript ol {
-  padding-left: 20px;
-  line-height: 1.7;
-}
-.film-transcript li {
-  margin-bottom: 14px;
-}
-.film-transcript strong {
-  color: var(--ink);
 }
 .film-error {
   padding: 18px;

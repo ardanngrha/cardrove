@@ -36,6 +36,14 @@ The app is independent of Anki. Deck licences and attribution remain with their 
 
 These are validation ceilings, not a promise that every device can import a file that size. Parsing and decompression need browser memory. Large decks can fail earlier on a phone. Prefer importing a smaller deck on a computer first.
 
+## Updating an imported deck
+
+An imported `.apkg` is a snapshot, not a subscription to its author. Cardrove does not check AnkiWeb for new versions. Anki itself also requires downloading and reimporting an updated shared deck; see the [Anki manual](https://docs.ankiweb.net/manual/contrib#sharing-decks-publicly).
+
+Download the latest package from the same author and import it again. Existing note GUIDs and card ordinals identify matching cards. Newer note content is merged and new cards are added while Cardrove's scheduling and review history remain separate. A newer local note edit is retained when the package note is older. This is a timestamp comparison, not a field-by-field conflict resolver: a newer author note can replace local edits. Keep a backup before importing a major update.
+
+Cards missing from the replacement package are retained. If the author recreated note identities or changed field or card-template structure, review the result carefully; automatic schema merging and exact parity with Anki's import options are not supported.
+
 ## Interrupted cloud imports
 
 Choose the same source file again to resume. Uploaded media can be reused. New cards become available after the import’s records and media have been verified.

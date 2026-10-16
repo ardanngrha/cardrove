@@ -3,70 +3,76 @@ import { link } from '../config';
 const video = link('media/cardrove-tour.mp4');
 ---
 
-<figure class="feature-film" id="feature-tour" aria-label="A 40-second tour of Cardrove">
+<figure class="feature-film" id="feature-tour" aria-label="Cardrove in practice">
   <div class="film-screen">
-    <video
-      controls
-      playsinline
-      preload="none"
-      width="1920"
-      height="1080"
-      poster={link('media/cardrove-tour-poster.webp')}
-      aria-label="Watch the Cardrove feature tour, 40 seconds, no spoken audio"
-      aria-describedby="film-caption"
-    >
-      <source src={video} type="video/mp4" />
-      <track
-        kind="captions"
-        src={link('media/cardrove-tour.en.vtt')}
-        srclang="en"
-        label="English"
-      />
-      <a href={video}>Download the Cardrove feature tour</a>
-    </video>
+    <button class="film-toggle" type="button" aria-label="Play Cardrove preview">
+      <video
+        muted
+        loop
+        playsinline
+        preload="metadata"
+        width="1920"
+        height="1080"
+        poster={link('media/cardrove-tour-poster.webp')}
+        aria-hidden="true"
+        disablepictureinpicture
+      >
+        <source src={video} type="video/mp4" />
+      </video>
+    </button>
     <p class="film-error" role="status" hidden>
-      The video could not load. <a href={video}>Open the MP4 directly</a>, or read the transcript
-      below.
+      The preview could not load. <a href={video}>Open the MP4 directly</a>.
     </p>
   </div>
-  <figcaption id="film-caption">
-    <span>40 seconds / A look inside</span><span>Sample collection</span>
-  </figcaption>
-  <details class="film-transcript">
-    <summary>Read the film transcript</summary>
-    <ol>
-      <li>
-        <strong>00:00 / A little, remembered.</strong> Cardrove is a personal study space for your flashcards.
-      </li>
-      <li>
-        <strong>00:04 / Bring your decks.</strong> Import an Anki .apkg file. The sample library holds
-        French, science, and design decks.
-      </li>
-      <li>
-        <strong>00:10 / Recall, then reveal.</strong> Think of the answer, reveal it, then choose Again,
-        Hard, Good, or Easy. FSRS schedules the next review. Space or Enter reveals; keys 1–4 rate.
-      </li>
-      <li>
-        <strong>00:19 / Within reach.</strong> Use your connected phone and computer. Light and dark themes
-        are available, and supported browsers can add the app to the Home Screen.
-      </li>
-      <li>
-        <strong>00:27 / Personal, by design.</strong> Name your workspace, choose your daily pace, and
-        manage your access code and study progress.
-      </li>
-      <li>
-        <strong>00:35 / Your own installation.</strong> Cardrove is open-source software you host for
-        yourself. Cloud study requires a connection.
-      </li>
-    </ol>
-  </details>
+  <figcaption><span>A look inside</span><span>Sample collection</span></figcaption>
 </figure>
 <script>
   const film = document.querySelector<HTMLVideoElement>('.feature-film video');
+  const toggle = document.querySelector<HTMLButtonElement>('.film-toggle');
   const error = document.querySelector<HTMLElement>('.film-error');
-  const showError = () => {
-    if (error) error.hidden = false;
-  };
-  film?.addEventListener('error', showError);
-  film?.querySelector('source')?.addEventListener('error', showError);
+  if (film && toggle) {
+    const motion = matchMedia('(prefers-reduced-motion: reduce)');
+    let manuallyPaused = false;
+    let visible = false;
+    const label = () => {
+      toggle.setAttribute(
+        'aria-label',
+        film.paused ? 'Play Cardrove preview' : 'Pause Cardrove preview',
+      );
+    };
+    const play = () => {
+      film.muted = true;
+      void film.play().catch(label);
+    };
+    const sync = () => {
+      if (!visible || document.hidden || motion.matches || manuallyPaused) film.pause();
+      else play();
+    };
+    toggle.addEventListener('click', () => {
+      if (film.paused) {
+        manuallyPaused = false;
+        play();
+      } else {
+        manuallyPaused = true;
+        film.pause();
+      }
+    });
+    film.addEventListener('play', label);
+    film.addEventListener('pause', label);
+    const showError = () => {
+      if (error) error.hidden = false;
+      toggle.disabled = true;
+    };
+    film.addEventListener('error', showError);
+    film.querySelector('source')?.addEventListener('error', showError);
+    motion.addEventListener('change', sync);
+    document.addEventListener('visibilitychange', sync);
+    new IntersectionObserver(
+      ([entry]) => {
+        visible = entry.isIntersecting;
+        sync();
+      },
+      { threshold: 0.15 },
+    ).observe(film);
+  }
 </script>
