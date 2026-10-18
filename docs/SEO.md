@@ -21,6 +21,20 @@ The current public sitemap is [sitemap-index.xml](https://ardanngrha.github.io/c
 
 A robots file only governs crawlers when served at a hostname's root. On this GitHub project site, `/cardrove/robots.txt` is not the effective robots policy for `ardanngrha.github.io`. The page-head sitemap link and a direct Search Console sitemap submission provide discovery without changing an unrelated root repository. A root-hosted copy serves the generated robots file at `/robots.txt`.
 
+## Optional sitemap mirror
+
+`tools/sitemap-mirror/` contains a small Cloudflare Worker for testing sitemap access from another host. It fetches the public XML sitemap, caches it for five minutes, and preserves the original canonical URLs. It is optional and is not part of an app installation. It does not use the app's database, credentials, or access codes. The source is fixed in `worker.mjs`; request parameters cannot choose an upstream URL. Update `SITE` explicitly if adapting it to a fork.
+
+Deploy it only when diagnosing a sitemap-host issue:
+
+```sh
+npx --yes wrangler@4.151.1 deploy --config tools/sitemap-mirror/wrangler.json
+```
+
+Use an existing Workers Free account and its `workers.dev` subdomain. No paid plan or storage binding is needed; requests still count toward the shared free Workers daily limit. Verify ownership of both the original public site and the mirror in Search Console, following [Google's cross-site sitemap instructions](https://developers.google.com/search/docs/crawling-indexing/sitemaps/build-sitemap#cross-submit-sitemaps).
+
+The mirror homepage accepts the public `GOOGLE_SITE_VERIFICATION` environment variable for HTML-tag verification. Set it as a plain-text Worker variable, retain it after verification, and submit `/sitemap.xml` in the mirror property's Sitemaps report. The config preserves dashboard variables on subsequent Wrangler deploys. The homepage uses noindex; the XML endpoint remains crawlable and indexable. A mirror that returns HTTP 200 is not proof that Google has processed the sitemap. Consider it successful only when the report confirms processing; changing hosts is not a guaranteed fix for **Couldn't fetch**.
+
 ## Google Search Console
 
 [Search Console is free](https://support.google.com/webmasters/answer/9128668?hl=en). It is not required for inclusion in Google Search, but it provides ownership verification, sitemap submission, URL inspection, and search performance reports.
