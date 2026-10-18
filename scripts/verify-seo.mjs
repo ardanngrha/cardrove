@@ -87,6 +87,9 @@ for (const url of locations(await read(resolve(site, 'sitemap-index.xml')))) {
     actual.add(page);
 }
 assert.deepEqual(actual, expected, 'Sitemap contains every public HTML page exactly once');
+const textURLs = (await read(resolve(site, 'sitemap.txt'))).trim().split('\n');
+assert.equal(new Set(textURLs).size, textURLs.length, 'Text sitemap URLs are unique');
+assert.deepEqual(new Set(textURLs), expected, 'Text sitemap matches the public canonical URLs');
 const robots = await read(resolve(site, 'robots.txt'));
 assert.ok(robots.includes(`Sitemap: ${new URL('sitemap-index.xml', base).href}`));
 assert.ok(!robots.includes('Disallow: /'));
