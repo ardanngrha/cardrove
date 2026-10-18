@@ -2,6 +2,8 @@
 layout: ../../layouts/Docs.astro
 title: Devices & backups
 description: Continue on another screen and keep an independent copy of your collection.
+seoTitle: "Connect Devices & Back Up Flashcard Progress"
+seoDescription: "Connect phones and computers to your Cardrove workspace, save or rotate your access code, and export or restore decks, media, and study progress."
 ---
 
 ## Connect another cloud device

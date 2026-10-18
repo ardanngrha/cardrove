@@ -113,6 +113,8 @@ GitHub Actions runs checks and builds, and publishes the public site to GitHub P
 
 Focused fixes and documentation improvements are welcome. Explain the problem, resulting behaviour, and verification. Use disposable data, and remove private deck content or credentials from examples. See [CONTRIBUTING.md](CONTRIBUTING.md).
 
+The public site includes generated sitemaps and search metadata. See [search visibility and Search Console setup](docs/SEO.md) for verification, hosting paths, and the private app's noindex policy.
+
 ## Licence
 
 Cardrove’s original code is [MIT licensed](LICENSE). Dependencies and imported decks retain their own licences. Cardrove is not affiliated with the Anki project.

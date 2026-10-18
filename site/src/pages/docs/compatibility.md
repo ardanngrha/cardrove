@@ -2,6 +2,8 @@
 layout: ../../layouts/Docs.astro
 title: Deck compatibility
 description: Bring the decks that fit. Know the boundaries before importing.
+seoTitle: "Anki Deck Import & APKG Compatibility"
+seoDescription: "Check supported Anki APKG cards, cloze templates, images, audio, import limits, and reimport behaviour before bringing a deck into Cardrove."
 ---
 
 ## Supported

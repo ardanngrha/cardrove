@@ -2,6 +2,8 @@
 layout: ../../layouts/Docs.astro
 title: Under the hood
 description: A static app, a private collection, and one owner’s connected devices.
+seoTitle: "Flashcard App Architecture: Svelte, SQLite & Supabase"
+seoDescription: "Explore Cardrove’s Svelte frontend, local SQLite server, Cloudflare Pages deployment, Supabase API, FSRS scheduling, and private media storage."
 ---
 
 ## Two ways to run

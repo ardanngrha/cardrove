@@ -2,6 +2,8 @@
 layout: ../../layouts/Docs.astro
 title: Contribute
 description: Focused improvements, clear behaviour, and a study space that stays understandable.
+seoTitle: "Contribute to the Open-source Flashcard App"
+seoDescription: "Run Cardrove locally, understand its npm workspaces, verify app and handbook changes, and contribute focused improvements to the open-source project."
 ---
 
 ## Work locally

@@ -2,6 +2,8 @@
 layout: ../../layouts/Docs.astro
 title: Start here
 description: A personal study space, on infrastructure you control.
+seoTitle: "Flashcard App Handbook & Setup Guide"
+seoDescription: "Set up Cardrove, import Anki APKG decks, and start reviewing with FSRS. Learn self-hosting, device access, backups, and compatibility."
 ---
 
 This app imports supported Anki decks and schedules reviews with FSRS. Each installation belongs to one person. Your connected devices share the same collection and progress.

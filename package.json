@@ -24,7 +24,8 @@
     "build:site": "npm run build --workspace site",
     "preview:site": "npm run preview --workspace site",
     "video:render": "npm run render --workspace video",
-    "video:stills": "npm run stills --workspace video"
+    "video:stills": "npm run stills --workspace video",
+    "verify:seo": "node scripts/verify-seo.mjs"
   },
   "dependencies": {
     "@lucide/svelte": "^1.57.0",

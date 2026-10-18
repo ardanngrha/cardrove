@@ -176,3 +176,13 @@ Both the application and public website explicitly link the same versioned, opaq
 The portfolio addition passed its required type, lint, formatting, and production-build checks in a clean release copy. Its English, German, and Japanese project routes built successfully.
 
 The deck-update investigation is recorded in [DECK_UPDATES.md](DECK_UPDATES.md). No automated source fetcher was deployed. A separate disposable merge fixture checked newer source fields, one new card, unchanged existing progress, and retention of a newer owner edit when importing an older source. The handbook now distinguishes package reimport from a subscription and documents timestamp and schema limitations.
+
+## Search visibility update, 18 October 2026
+
+The public site now generates its sitemap through the official Astro integration. All eight public HTML pages have distinct descriptive titles and descriptions, matching canonical and social URLs, local preview images, a sitemap discovery link, and parsed JSON-LD. The landing describes the real software without ratings or reviews; handbook breadcrumbs follow the existing navigation. Search metadata is separate from the editorial headings and visible handbook lead text.
+
+`npm run verify:seo` passed for both the production GitHub project base path and a root-hosted example. Sitemap URLs exactly matched the rendered HTML pages in each build. The optional Google verification tag was exercised in an isolated build, then the production build was regenerated without the fixture marker. The app build contains a noindex meta tag and response header, with a real text robots file that allows the crawler to read that rule. Existing app JavaScript output remains unchanged. Public and cloud builds passed, and the SEO check is part of the publication workflow.
+
+Anti-slop gate for this scope: hard gate PASS because metadata describes existing features, JSON-LD contains no invented social proof, and the existing visible interface is preserved; purpose gate PASS because the change adds machine-readable page identity rather than decoration; liveliness PASS because the approved ENERGY 2 / RHYTHM 3 / MOTION 2 composition is retained; craftsmanship PASS because both deployment path forms and the public/private indexing boundary are verified from build output. The existing full delivery gate remains applicable to the visible interface.
+
+Search Console verification and sitemap submission require the owner's Google session. Deployment checks do not establish Google indexing, rich-result eligibility, ranking, or Core Web Vitals. [SEO.md](SEO.md) records the distinction and the exact setup steps. No paid analytics, SEO service, tracking script, or hosting upgrade was added.

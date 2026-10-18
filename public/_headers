@@ -1,5 +1,6 @@
 /*
   X-Content-Type-Options: nosniff
+  X-Robots-Tag: noindex, nofollow
   Referrer-Policy: no-referrer
   X-Frame-Options: DENY
   Permissions-Policy: camera=(), microphone=(), geolocation=()
@@ -23,4 +24,8 @@
   Cache-Control: no-cache
 
 /icons/cardrove-touch-v2.png
+  Cache-Control: no-cache
+
+/robots.txt
+  Content-Type: text/plain; charset=utf-8
   Cache-Control: no-cache

@@ -2,6 +2,8 @@
 layout: ../../layouts/Docs.astro
 title: Study & organise
 description: Learn at your own pace, one return at a time.
+seoTitle: "FSRS Spaced Repetition & Flashcard Study Guide"
+seoDescription: "Review flashcards with FSRS scheduling, use keyboard ratings, edit notes, search decks, and manage your daily study pace in Cardrove."
 ---
 
 ## Your daily practice

@@ -2,6 +2,8 @@
 layout: ../../layouts/Docs.astro
 title: Host your own
 description: Run locally, or put your private study space online with Cloudflare Pages and Supabase.
+seoTitle: "Self-host Flashcards on Cloudflare Pages & Supabase"
+seoDescription: "Deploy your own Cardrove flashcard app on Cloudflare Pages and Supabase, or run locally with Node.js and SQLite. Follow first-owner setup and device pairing."
 ---
 
 ## Before you begin

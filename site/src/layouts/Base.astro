@@ -1,12 +1,51 @@
 ---
-import { brand, repository, link } from '../config';
+import { brand, repository, link, chapters } from '../config';
 import '../styles/site.css';
 const {
-  title = 'A little, remembered.',
-  description = 'A personal home for your Anki decks. Study any subject, at your own pace, on infrastructure you control.',
+  title = 'Self-hosted Flashcards & Spaced Repetition',
+  seoTitle = title,
+  description = 'Import supported Anki decks and study with FSRS spaced repetition on your phone or computer. Open-source flashcards you self-host, with your own collection and progress.',
 } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site || Astro.url).href;
+const home = new URL(link(), Astro.site || Astro.url).href;
+const isHome = canonical === home;
+const fullTitle = isHome ? `${brand} | ${seoTitle}` : `${seoTitle} | ${brand}`;
 const previewImage = new URL(link('media/cardrove-tour-poster.webp'), Astro.site || Astro.url).href;
+const previewAlt = 'Cardrove review on a phone and computer, using a sample collection';
+const handbook = new URL(link('docs/'), Astro.site || Astro.url).href;
+const chapter = chapters.find(
+  (item) =>
+    new URL(link(`docs/${item.slug ? item.slug + '/' : ''}`), Astro.site || Astro.url).href ===
+    canonical,
+);
+const schema = isHome
+  ? {
+      '@context': 'https://schema.org',
+      '@type': 'SoftwareApplication',
+      '@id': home + '#application',
+      name: brand,
+      url: home,
+      description,
+      applicationCategory: 'EducationalApplication',
+      operatingSystem: 'Any operating system with a modern web browser',
+      screenshot: previewImage,
+      license: `${repository.replace(/\/$/, '')}/blob/main/LICENSE`,
+      sameAs: [repository],
+    }
+  : chapter
+    ? {
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: brand, item: home },
+          { '@type': 'ListItem', position: 2, name: 'Handbook', item: handbook },
+          ...(canonical === handbook
+            ? []
+            : [{ '@type': 'ListItem', position: 3, name: chapter.title, item: canonical }]),
+        ],
+      }
+    : undefined;
+const verification = import.meta.env.SITE_GOOGLE_VERIFICATION;
 ---
 
 <!doctype html>
@@ -17,16 +56,33 @@ const previewImage = new URL(link('media/cardrove-tour-poster.webp'), Astro.site
     <meta name="description" content={description} />
     <meta name="theme-color" content="#f7f5f0" />
     <link rel="canonical" href={canonical} />
+    <link rel="sitemap" type="application/xml" href={link('sitemap-index.xml')} />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    {verification && <meta name="google-site-verification" content={verification} />}
     <meta property="og:type" content="website" />
-    <meta property="og:title" content={`${title} · ${brand}`} />
+    <meta property="og:site_name" content={brand} />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={previewImage} />
-    <meta
-      property="og:image:alt"
-      content="Cardrove review on a phone and computer, using a sample collection"
-    />
+    <meta property="og:image:alt" content={previewAlt} />
+    <meta property="og:image:width" content="1440" />
+    <meta property="og:image:height" content="810" />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={previewImage} />
+    <meta name="twitter:image:alt" content={previewAlt} />
+    {
+      schema && (
+        <script
+          type="application/ld+json"
+          is:inline
+          set:html={JSON.stringify(schema).replace(/</g, '\\u003c')}
+        />
+      )
+    }
     <link rel="icon" type="image/svg+xml" href={link('icons/cardrove.svg')} />
     <link rel="icon" type="image/png" sizes="32x32" href={link('icons/cardrove-32.png')} />
     <link
@@ -36,7 +92,7 @@ const previewImage = new URL(link('media/cardrove-tour-poster.webp'), Astro.site
       href={link('icons/cardrove-touch-v2.png')}
     />
     <meta name="apple-mobile-web-app-title" content={brand} />
-    <title>{title} · {brand}</title>
+    <title>{fullTitle}</title>
     <script is:inline>
       try {
         document.documentElement.dataset.theme = localStorage.getItem('site-theme') || 'system';
@@ -59,7 +115,8 @@ const previewImage = new URL(link('media/cardrove-tour-poster.webp'), Astro.site
           ><span class="theme-light" aria-hidden="true">◐</span><span
             class="theme-dark"
             aria-hidden="true">◑</span
-          ></button>
+          ></button
+        >
       </nav>
     </header>
     <slot />
