@@ -11,7 +11,7 @@ The owner selected: “Editorial modern, tenang tapi berkarakter”. The app and
 - Reading this as: a personal study workspace for independent learners, in a calm modern editorial style. The public site introduces that workspace to people who want to run their own copy.
 - Warm paper and ink keep long reading sessions comfortable. A burnt orange accent identifies the next meaningful action. Semantic feedback colors are reserved for errors and review ratings.
 - Georgia supplies a literary voice for short headings without a font download. System sans-serif keeps controls familiar and supports the device's language fonts.
-- The repeated identity motif is an index rule and numbered margin, connecting the library, study card, and documentation. No invented logo is needed; use a text wordmark.
+- The repeated identity motif is a fine index rule, connecting the library, study card, and documentation. Numbers describe real counts or sequence, rather than decorating section titles. No invented logo is needed; use a text wordmark.
 - Decks use rows, not promotional tiles: long imported titles and nested paths need room. Cards are reserved for actual flashcards.
 - Motion explains a change of state: a new card arrives, an answer is revealed, a navigation panel opens. The public hero repeats the product film at the owner's request; the app avoids looping decoration. Respect reduced motion.
 - Utility icons explain an action or destination: search, import, review history, settings, theme, and navigation. They never stand in for content or decorate every section.
@@ -30,3 +30,11 @@ The website serves a small WebP poster and a silent, inline, looping MP4 preview
 ## Publication boundaries
 
 The public repository contains software, setup documentation, and original labeled sample content. Personal decks, media, sessions, environment files, and production bootstrap material are excluded. Existing storage identifiers and API routes remain compatible to preserve the deployed collection.
+
+## Impeccable refinement, October 2026
+
+The public site keeps the paper, ink, terracotta, Georgia, and real product film. The first screen names flashcards and self-hosting, with one setup action and a quieter link to the interactive sample. Section headings explain the content; repeated introductory labels, ornamental numbering, and repeated entrance animations are removed. The sample is a level, bordered flashcard with a real sample position, rather than a tilted decorative object.
+
+The handbook prioritises reading: a 70ch article measure, 16px body copy, descriptive chapter links, and a collapsed mobile chapter menu. Its menu breakpoint matches the two-column layout so chapter navigation remains reachable on tablets.
+
+App navigation and page headings use the same task names. Review readiness, counts, and the next action lead the home screen. Empty collections lead to import, rather than claiming that reviews are complete. Once cards exist, today's totals and deck rows become visible. The compact sidebar retains workspace identity and account controls without a decorative quotation. Review-card and dialog transitions remain; page navigation does not animate every screen.

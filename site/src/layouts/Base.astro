@@ -105,16 +105,21 @@ const verification = import.meta.env.SITE_GOOGLE_VERIFICATION;
       <a class="wordmark" href={link()}>{brand}<span>.</span></a><nav aria-label="Main navigation">
         <a class:list={{ current: Astro.url.pathname.includes('/docs') }} href={link('docs/')}
           >Handbook</a
-        >{
-          repository && (
-            <a href={repository}>
-              GitHub <span aria-hidden="true">↗</span>
-            </a>
-          )
-        }<button class="theme-toggle" aria-label="Switch color theme"
-          ><span class="theme-light" aria-hidden="true">◐</span><span
-            class="theme-dark"
-            aria-hidden="true">◑</span
+        >{repository && <a href={repository}>GitHub</a>}<button
+          class="theme-toggle"
+          aria-label="Switch color theme"
+          ><svg
+            viewBox="0 0 24 24"
+            width="20"
+            height="20"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            aria-hidden="true"
+            ><circle cx="12" cy="12" r="8"></circle><path
+              d="M12 4a8 8 0 0 1 0 16Z"
+              fill="currentColor"
+              stroke="none"></path></svg
           ></button
         >
       </nav>
@@ -122,9 +127,7 @@ const verification = import.meta.env.SITE_GOOGLE_VERIFICATION;
     <slot />
     <footer class="site-footer">
       <div>
-        <a class="wordmark" href={link()}>{brand}<span>.</span></a><p>
-          A little, remembered.<br />A collection of your own.
-        </p>
+        <a class="wordmark" href={link()}>{brand}<span>.</span></a><p>A little, remembered.</p>
       </div><div>
         <a href={link('docs/self-host/')}>Host your own</a><a href={link('docs/compatibility/')}
           >Compatibility</a
@@ -133,26 +136,25 @@ const verification = import.meta.env.SITE_GOOGLE_VERIFICATION;
     </footer>
     <script>
       const button = document.querySelector<HTMLButtonElement>('.theme-toggle');
+      const isDark = () =>
+        document.documentElement.dataset.theme === 'dark' ||
+        (document.documentElement.dataset.theme === 'system' &&
+          matchMedia('(prefers-color-scheme: dark)').matches);
+      const labelTheme = () =>
+        button?.setAttribute(
+          'aria-label',
+          isDark() ? 'Switch to light theme' : 'Switch to dark theme',
+        );
+      labelTheme();
+      matchMedia('(prefers-color-scheme: dark)').addEventListener('change', labelTheme);
       button?.addEventListener('click', () => {
-        const current = document.documentElement.dataset.theme;
-        const dark =
-          current === 'dark' ||
-          (current === 'system' && matchMedia('(prefers-color-scheme: dark)').matches);
-        const next = dark ? 'light' : 'dark';
+        const next = isDark() ? 'light' : 'dark';
         document.documentElement.dataset.theme = next;
-        localStorage.setItem('site-theme', next);
+        labelTheme();
+        try {
+          localStorage.setItem('site-theme', next);
+        } catch {}
       });
-      const observer = new IntersectionObserver(
-        (entries) => {
-          for (const entry of entries)
-            if (entry.isIntersecting) {
-              entry.target.classList.add('in-view');
-              observer.unobserve(entry.target);
-            }
-        },
-        { threshold: 0.12 },
-      );
-      document.querySelectorAll('[data-reveal]').forEach((element) => observer.observe(element));
     </script>
   </body>
 </html>

@@ -119,7 +119,7 @@ summary {
   gap: 18px;
 }
 .site-header nav a {
-  font-size: 12px;
+  font-size: 14px;
   min-height: 44px;
   display: flex;
   align-items: center;
@@ -145,28 +145,6 @@ summary {
 }
 .theme-toggle:hover {
   background: var(--soft);
-}
-.theme-dark {
-  display: none;
-}
-:root[data-theme='dark'] .theme-dark {
-  display: block;
-}
-:root[data-theme='dark'] .theme-light {
-  display: none;
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme='light']) .theme-dark {
-    display: block;
-  }
-  :root:not([data-theme='light']) .theme-light {
-    display: none;
-  }
-}
-.index-label {
-  font-size: 12px;
-  color: var(--muted);
-  margin-bottom: 20px;
 }
 .button {
   display: inline-flex;
@@ -214,7 +192,7 @@ h2 {
   font:
     400 clamp(40px, 8.5vw, 72px)/1.06 Georgia,
     serif;
-  letter-spacing: -1.5px;
+  letter-spacing: -0.025em;
 }
 h2 em {
   color: var(--accent);
@@ -225,18 +203,10 @@ h2 em {
   max-width: 1440px;
   margin: auto;
 }
-.opening-margin {
-  display: flex;
-  justify-content: space-between;
-  padding-top: 22px;
-  border-top: 1px solid var(--ink);
-  color: var(--muted);
-  font-size: 10px;
-}
 .opening-spread {
   display: grid;
   gap: 35px;
-  padding: 38px 0 35px;
+  padding: 36px 0 60px;
   align-items: center;
 }
 .opening-copy {
@@ -244,9 +214,9 @@ h2 em {
 }
 .opening-copy h1 {
   font:
-    400 clamp(56px, 9vw, 86px)/1.02 Georgia,
+    400 clamp(46px, 9vw, 76px)/1.06 Georgia,
     serif;
-  letter-spacing: -2.8px;
+  letter-spacing: -0.035em;
 }
 .opening-copy h1 em {
   color: var(--accent);
@@ -255,10 +225,10 @@ h2 em {
   color: var(--muted);
   font-size: 15px;
   margin: 24px 0;
-  max-width: 350px;
+  max-width: 40ch;
 }
 .opening-copy .opening-detail {
-  font-size: 11px;
+  font-size: 12px;
   margin-bottom: 0;
 }
 .feature-film {
@@ -268,7 +238,7 @@ h2 em {
 }
 .film-screen {
   border: 1px solid var(--line);
-  border-radius: 6px;
+  border-radius: 12px;
   overflow: hidden;
   background: var(--paper);
 }
@@ -307,23 +277,8 @@ h2 em {
   color: var(--ink);
   font-size: 13px;
 }
-.opening-note {
-  display: flex;
-  justify-content: space-between;
-  gap: 20px;
-  border-top: 1px solid var(--line);
-  padding: 20px 0;
-  font-size: 11px;
-  color: var(--muted);
-}
-.opening-note > span:last-child {
-  align-self: end;
-}
-.desktop-break {
-  display: none;
-}
 .practice-section {
-  margin-top: 50px;
+  margin-top: 0;
   background: var(--soft);
   padding: 55px 24px;
 }
@@ -331,10 +286,10 @@ h2 em {
   font-size: 48px;
   margin-bottom: 28px;
 }
-.practice-intro > p:not(.index-label) {
+.practice-intro > p {
   color: var(--muted);
   font-size: 14px;
-  max-width: 340px;
+  max-width: 38ch;
   margin-bottom: 18px;
 }
 .demo {
@@ -351,9 +306,7 @@ h2 em {
 .sample-card {
   background: var(--paper);
   border: 1px solid var(--line);
-  border-radius: 6px;
-  transform: rotate(-1.2deg);
-  box-shadow: 0 12px 35px #302b1b0c;
+  border-radius: 12px;
 }
 .sample-card-top,
 .sample-card-bottom {
@@ -433,35 +386,31 @@ h2 em {
   color: var(--ink);
 }
 .ownership-ledger {
-  margin-top: 40px;
+  margin: 40px 0 0;
 }
 .ownership-ledger > div {
   border-top: 1px solid var(--line);
-  padding: 23px 0;
-  display: grid;
-  grid-template-columns: 100px minmax(0, 1fr);
-  gap: 15px;
+  padding: 24px 0;
 }
-.ownership-ledger span {
-  font-size: 11px;
-  color: var(--muted);
-}
-.ownership-ledger strong {
+.ownership-ledger dt {
   font:
-    400 23px Georgia,
+    400 23px/1.25 Georgia,
     serif;
+  margin-bottom: 12px;
 }
-.ownership-ledger p {
-  grid-column: 2;
-  font-size: 13px;
+.ownership-ledger dd {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.7;
   color: var(--muted);
+  max-width: 36ch;
 }
 .handbook-section {
   max-width: 1320px;
   margin: auto;
   padding: 20px 24px 60px;
 }
-.handbook-section > div > p:not(.index-label) {
+.handbook-section > div > p {
   color: var(--muted);
   font-size: 14px;
   margin: 25px 0;
@@ -476,17 +425,6 @@ h2 em {
   gap: 18px;
   align-items: start;
   text-decoration: none;
-}
-.chapter-list > a > span {
-  color: var(--accent);
-  font:
-    italic 17px Georgia,
-    serif;
-  padding-top: 5px;
-}
-.chapter-list > a > span:last-child {
-  margin-left: auto;
-  font: inherit;
 }
 .chapter-list h3 {
   font:
@@ -559,9 +497,6 @@ h2 em {
 .docs-nav {
   margin-bottom: 35px;
 }
-.docs-nav .index-label {
-  margin-bottom: 8px;
-}
 .chapter-menu {
   border-bottom: 1px solid var(--line);
 }
@@ -587,12 +522,6 @@ h2 em {
   padding: 8px 10px;
   border-radius: 4px;
 }
-.docs-nav nav small {
-  color: var(--muted);
-  font:
-    italic 13px Georgia,
-    serif;
-}
 .docs-nav nav a:hover {
   background: var(--soft);
 }
@@ -615,7 +544,7 @@ h2 em {
   font:
     400 clamp(40px, 9vw, 60px)/1.08 Georgia,
     serif;
-  letter-spacing: -1.5px;
+  letter-spacing: -0.025em;
 }
 .prose .lead {
   color: var(--muted);
@@ -638,7 +567,7 @@ h2 em {
 }
 .prose p,
 .prose li {
-  font-size: 15px;
+  font-size: 16px;
   line-height: 1.8;
 }
 .prose p {
@@ -735,24 +664,17 @@ h2 em {
   .opening {
     padding: 0 45px;
   }
-  .opening-margin {
-    font-size: 12px;
-    padding-top: 26px;
-  }
   .opening-spread {
-    padding: 48px 0;
+    padding: 56px 0 76px;
     grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
     gap: 28px;
   }
   .opening-copy h1 {
-    font-size: clamp(49px, 6.3vw, 86px);
-    letter-spacing: -2.5px;
+    font-size: clamp(46px, 5.1vw, 76px);
+    letter-spacing: -0.035em;
   }
   .feature-film figcaption {
     font-size: 11px;
-  }
-  .opening-note {
-    font-size: 12px;
   }
   .practice-section {
     padding: 70px 45px;
@@ -760,7 +682,7 @@ h2 em {
     grid-template-columns: 1fr 1.2fr;
     gap: 50px;
     align-items: center;
-    margin-top: 70px;
+    margin-top: 0;
   }
   .practice-intro h2 {
     font-size: 55px;
@@ -795,14 +717,7 @@ h2 em {
     grid-template-columns: repeat(3, 1fr);
     gap: 35px;
   }
-  .ownership-ledger > div {
-    display: flex;
-    flex-direction: column;
-    gap: 18px;
-  }
-  .ownership-ledger p {
-    margin: 0;
-  }
+
   .handbook-section {
     padding: 20px 45px 85px;
     display: grid;
@@ -836,7 +751,7 @@ h2 em {
     padding: 35px 45px 80px;
   }
   .prose {
-    max-width: 760px;
+    max-width: 70ch;
     margin: auto;
   }
 }
@@ -853,32 +768,29 @@ h2 em {
   .opening-spread {
     padding: 55px 0 50px;
     gap: 50px;
-    grid-template-columns: minmax(0, 0.82fr) minmax(0, 1.35fr);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
   }
   .opening-copy h1 {
-    font-size: clamp(58px, 5.2vw, 78px);
-    letter-spacing: -2.5px;
+    font-size: clamp(54px, 5vw, 76px);
+    letter-spacing: -0.035em;
   }
   .opening-copy > p {
     font-size: 16px;
-    max-width: 320px;
+    max-width: 40ch;
   }
   .opening-copy .opening-detail {
     font-size: 12px;
   }
-  .desktop-break {
-    display: block;
-  }
   .practice-section {
     max-width: 1440px;
-    margin: 85px auto 0;
+    margin: 0 auto;
     padding: 95px 100px;
     gap: 100px;
   }
   .practice-intro h2 {
-    font-size: 68px;
+    font-size: 58px;
   }
-  .practice-intro > p:not(.index-label) {
+  .practice-intro > p {
     font-size: 15px;
   }
   .sample-card-top,
@@ -900,7 +812,7 @@ h2 em {
     gap: 65px 100px;
   }
   .ownership-section h2 {
-    font-size: 62px;
+    font-size: 58px;
   }
   .ownership-copy .large-copy {
     font-size: 25px;
@@ -911,7 +823,7 @@ h2 em {
   .ownership-ledger {
     gap: 60px;
   }
-  .ownership-ledger strong {
+  .ownership-ledger dt {
     font-size: 27px;
   }
   .handbook-section {
@@ -919,7 +831,7 @@ h2 em {
     gap: 100px;
   }
   .handbook-section h2 {
-    font-size: 68px;
+    font-size: 58px;
   }
   .chapter-list {
     margin-top: 20px;
@@ -960,21 +872,6 @@ h2 em {
     margin: 0;
   }
 }
-@media (prefers-reduced-motion: no-preference) {
-  [data-reveal].in-view {
-    animation: section-arrive 0.65s ease-out both;
-  }
-  @keyframes section-arrive {
-    from {
-      opacity: 0.6;
-      transform: translateY(18px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-}
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -982,5 +879,62 @@ h2 em {
     animation: none !important;
     transition: none !important;
     scroll-behavior: auto !important;
+  }
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--paper);
+}
+:root {
+  scrollbar-color: var(--line) var(--ground);
+}
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+}
+svg {
+  flex-shrink: 0;
+}
+.site-header {
+  border-bottom: 1px solid var(--line);
+}
+.opening-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px 24px;
+}
+.chapter-list > a > svg {
+  margin-left: auto;
+  margin-top: 6px;
+  transition: transform 180ms ease-out;
+}
+.chapter-list > a:hover > svg {
+  transform: translateX(4px);
+}
+.handbook-home {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  font:
+    400 22px Georgia,
+    serif;
+  text-decoration: none;
+  margin-bottom: 12px;
+}
+.docs-nav nav a {
+  border-radius: 0;
+}
+.prose > header .lead {
+  max-width: 56ch;
+}
+.prose :is(h2, h3) {
+  text-wrap: pretty;
+}
+@media (min-width: 1100px) {
+  .opening-spread {
+    padding: 70px 0 85px;
   }
 }

@@ -495,19 +495,18 @@
     <section class="entry-story">
       <a class="wordmark" href="/">{brand}<span>.</span></a>
       <div class="entry-title">
-        <p class="index-label">{t('A little, remembered.', 'Sedikit, lalu menetap.')}</p>
         <h1>
-          {t('Make room for', 'Beri ruang untuk')}<br /><em>{t('what stays.', 'yang menetap.')}</em>
+          {t('A little,', 'Sedikit,')}<br /><em>{t('remembered.', 'diingat kembali.')}</em>
         </h1>
         <p>
           {t(
-            'Your decks. Your pace. A quiet place to practise what matters to you.',
-            'Deck-mu. Ritmemu. Tempat tenang untuk melatih hal yang berarti buatmu.',
+            'Import your Anki decks and build a daily review habit. Your collection and progress, in one place.',
+            'Impor deck Anki dan biasakan review setiap hari. Koleksi dan progresmu, di satu tempat.',
           )}
         </p>
       </div>
       <div class="entry-foot">
-        <span>01 / {t('Return. Recall. Repeat.', 'Kembali. Ingat. Ulangi.')}</span><span
+        <span>{t('Flashcards & spaced repetition', 'Flashcard & pengulangan berjarak')}</span><span
           >{t('A personal study space', 'Ruang belajar pribadi')}</span
         >
       </div>
@@ -515,17 +514,12 @@
     <section class="entry-form">
       {@render appearance()}
       <div class="entry-form-inner">
-        <p class="index-label">
-          {cloudMode
-            ? t('Your device, connected', 'Perangkatmu, terhubung')
-            : t('Your own study space', 'Ruang belajarmu sendiri')}
-        </p>
         <h2>
           {setup
-            ? t('Settle in.', 'Mulai dari sini.')
+            ? t('Set up your workspace', 'Siapkan workspace')
             : cloudMode
               ? t('Connect this device.', 'Hubungkan perangkat ini.')
-              : t('Welcome back.', 'Selamat datang kembali.')}
+              : t('Open your workspace', 'Buka workspace')}
         </h2>
         <p>
           {cloudMode
@@ -655,11 +649,6 @@
           >{/each}
       </nav>
       <div class="rail-bottom">
-        <p class="rail-note">
-          {t('Knowledge grows', 'Pengetahuan tumbuh')}<br /><em
-            >{t('when you return.', 'saat kamu kembali.')}</em
-          >
-        </p>
         <div class="profile">
           <span dir="auto">{user.name}</span><small
             >{syncing
@@ -714,13 +703,12 @@
               onclick={() => (message = '')}><X size={18} /></button
             >
           </div>{/if}
-        {#key view}<div class="page-content" in:fly={{ y: 6, duration: motion() }}>
+        {#key view}<div class="page-content">
             {#if view === 'home' && summary}
               <div class="page-heading">
                 <div>
-                  <p class="index-label">01 / {t('A daily practice', 'Latihan harian')}</p>
                   <h1 id="page-title" tabindex="-1">
-                    {t('Back to what matters.', 'Kembali ke yang berarti.')}
+                    {t('Today', 'Hari ini')}
                   </h1>
                 </div>
                 <time
@@ -734,34 +722,42 @@
               </div>
               <section class="daily-spread" aria-labelledby="session-heading">
                 <div class="session-copy">
-                  <p class="index-label">{t('Ready when you are', 'Siap saat kamu siap')}</p>
                   <h2 id="session-heading">
-                    {due + availableNew > 0
-                      ? t('A little today.', 'Sedikit hari ini.')
-                      : t('Room to breathe.', 'Ruang untuk jeda.')}<br /><em
-                      >{due + availableNew > 0
-                        ? t('More remembered.', 'Lebih melekat esok.')
-                        : t('Return tomorrow.', 'Kembali esok hari.')}</em
-                    >
+                    {summary.total === 0
+                      ? t('Start with a deck.', 'Mulai dengan satu deck.')
+                      : due + availableNew > 0
+                        ? t('Ready for review.', 'Siap untuk review.')
+                        : t('You’re up to date.', 'Review sudah selesai.')}
                   </h2>
                   <p>
-                    {due + availableNew > 0
+                    {summary.total === 0
                       ? t(
-                          'Pick up where you left off. Your next cards are ready.',
-                          'Lanjutkan dari tempatmu berhenti. Kartu berikutnya sudah menunggu.',
+                          'Import an Anki .apkg file to start studying. Your images and audio come along too.',
+                          'Impor file Anki .apkg untuk mulai belajar. Gambar dan audio ikut dibawa.',
                         )
-                      : t(
-                          'You have finished the cards available now. Your collection will be here when the next review is due.',
-                          'Kartu yang tersedia sudah selesai. Koleksimu tetap di sini saat review berikutnya tiba.',
-                        )}
+                      : due + availableNew > 0
+                        ? t(
+                            'Recall the answer, then rate how well you remembered. We’ll schedule the next review.',
+                            'Ingat jawabannya, lalu nilai seberapa baik kamu mengingat. Review berikutnya akan dijadwalkan.',
+                          )
+                        : t(
+                            'No cards are available right now. Check the next review time, or add a deck to your library.',
+                            'Belum ada kartu yang tersedia saat ini. Cek jadwal review berikutnya, atau tambah deck ke koleksimu.',
+                          )}
                   </p>
-                  <button class="button primary" disabled={busy} onclick={() => study()}
-                    >{due + availableNew > 0
-                      ? t('Begin review', 'Mulai review')
-                      : t('Check next review', 'Cek review berikutnya')}<ArrowRight
-                      size={18}
-                    /></button
-                  >
+                  <button
+                    class="button primary"
+                    disabled={busy}
+                    onclick={() => (summary?.total === 0 ? openImport() : study())}
+                    >{summary.total === 0
+                      ? t('Import your first deck', 'Impor deck pertamamu')
+                      : due + availableNew > 0
+                        ? t('Begin review', 'Mulai review')
+                        : t('Check next review', 'Cek review berikutnya')}
+                    {#if summary.total === 0}<Upload size={18} />{:else}<ArrowRight
+                        size={18}
+                      />{/if}
+                  </button>
                 </div>
                 <div class="session-index">
                   <div>
@@ -773,54 +769,49 @@
                       >{number(availableNew)}</strong
                     >
                   </div>
-                  <p>{t('One card at a time.', 'Satu kartu, satu langkah.')}</p>
                 </div>
               </section>
-              <div class="daily-ledger">
-                <div>
-                  <span>{t('Reviews today', 'Review hari ini')}</span><strong
-                    >{number(summary.today.count)}<small>
-                      / {number(summary.settings.goal)}</small
-                    ></strong
-                  ><progress
-                    value={progress}
-                    max="100"
-                    aria-label={t('Daily review goal', 'Target review harian')}
-                  ></progress>
+              {#if summary.total > 0}
+                <div class="daily-ledger">
+                  <div>
+                    <span>{t('Reviews today', 'Review hari ini')}</span><strong
+                      >{number(summary.today.count)}<small>
+                        / {number(summary.settings.goal)}</small
+                      ></strong
+                    ><progress
+                      value={progress}
+                      max="100"
+                      aria-label={t('Daily review goal', 'Target review harian')}
+                    ></progress>
+                  </div>
+                  <div>
+                    <span>{t('Current streak', 'Ritme belajar')}</span><strong
+                      >{number(summary.streak)}<small>
+                        {t(summary.streak === 1 ? 'day' : 'days', 'hari')}</small
+                      ></strong
+                    >
+                  </div>
+                  <div>
+                    <span>{t('Time today', 'Waktu hari ini')}</span><strong
+                      >{number(Math.round(summary.today.elapsed / 60000))}<small>
+                        {t('min', 'menit')}</small
+                      ></strong
+                    >
+                  </div>
                 </div>
-                <div>
-                  <span>{t('Current streak', 'Ritme belajar')}</span><strong
-                    >{number(summary.streak)}<small>
-                      {t(summary.streak === 1 ? 'day' : 'days', 'hari')}</small
-                    ></strong
+                <div class="section-heading">
+                  <h2>{t('Your decks', 'Deck-mu')}</h2>
+                  <button class="text-button" onclick={() => navigate('decks')}
+                    >{t('Open library', 'Buka koleksi')}<ArrowRight size={17} /></button
                   >
                 </div>
-                <div>
-                  <span>{t('Time today', 'Waktu hari ini')}</span><strong
-                    >{number(Math.round(summary.today.elapsed / 60000))}<small>
-                      {t('min', 'menit')}</small
-                    ></strong
-                  >
-                </div>
-              </div>
-              <div class="section-heading">
-                <h2>{t('On your shelf', 'Di rak belajarmu')}</h2>
-                <button class="text-button" onclick={() => navigate('decks')}
-                  >{t('Open library', 'Buka koleksi')}<ArrowRight size={17} /></button
-                >
-              </div>
-              {@render deckRows(summary.decks.slice(0, 4))}
-              <footer class="workspace-foot">
-                <span>{brand} / {t('Made for returning', 'Tempat untuk kembali')}</span><span
-                  >{t('Your pace, your collection.', 'Ritmemu, koleksimu.')}</span
-                >
-              </footer>
+                {@render deckRows(summary.decks.slice(0, 4))}
+              {/if}
             {:else if view === 'decks' && summary}
               <div class="page-heading">
                 <div>
-                  <p class="index-label">02 / {t('Your collection', 'Koleksimu')}</p>
                   <h1 id="page-title" tabindex="-1">
-                    {t('A shelf of possibilities.', 'Satu rak, banyak kemungkinan.')}
+                    {t('Your library', 'Koleksimu')}
                   </h1>
                   <p>
                     {number(summary.total)}
@@ -891,12 +882,9 @@
                 </div>
               {:else}<section class="session-done">
                   <span class="done-symbol"><Check size={30} /></span>
-                  <p class="index-label">
-                    {t('A good place to pause', 'Saat yang tepat untuk jeda')}
-                  </p>
                   <h2>
                     {sessionCount
-                      ? t('A little more remembered.', 'Sedikit lagi yang menetap.')
+                      ? t('Session complete.', 'Sesi selesai.')
                       : t('You are up to date.', 'Untuk saat ini, selesai.')}
                   </h2>
                   <p>
@@ -933,9 +921,8 @@
             {:else if view === 'browse'}
               <div class="page-heading">
                 <div>
-                  <p class="index-label">03 / {t('Look a little closer', 'Kenali lebih dekat')}</p>
                   <h1 id="page-title" tabindex="-1">
-                    {t('Inside your cards.', 'Di balik kartu-kartumu.')}
+                    {t('Browse cards', 'Jelajahi kartu')}
                   </h1>
                   <p>
                     {t(
@@ -1049,11 +1036,8 @@
             {:else if view === 'stats' && summary}
               <div class="page-heading">
                 <div>
-                  <p class="index-label">
-                    04 / {t('The habit takes shape', 'Kebiasaan mulai terbentuk')}
-                  </p>
                   <h1 id="page-title" tabindex="-1">
-                    {t('Small returns, over time.', 'Kembali, sedikit demi sedikit.')}
+                    {t('Your progress', 'Kemajuan belajar')}
                   </h1>
                   <p>
                     {t(
@@ -1147,8 +1131,7 @@
             {:else if view === 'settings' && summary}
               <div class="page-heading">
                 <div>
-                  <p class="index-label">05 / {t('Make yourself at home', 'Atur agar nyaman')}</p>
-                  <h1 id="page-title" tabindex="-1">{t('Your own rhythm.', 'Ritmemu sendiri.')}</h1>
+                  <h1 id="page-title" tabindex="-1">{t('Settings', 'Pengaturan')}</h1>
                 </div>
                 <button
                   class="text-button"
@@ -1288,8 +1271,7 @@
 
 {#snippet deckRows(decks: Deck[])}
   <div class="deck-list">
-    {#each decks as deck, i}<article class="deck-row">
-        <span class="deck-index">{String(i + 1).padStart(2, '0')}</span>
+    {#each decks as deck}<article class="deck-row">
         <div class="deck-name">
           <h3 dir="auto">{label(deck)}</h3>
           <p dir="auto">
@@ -1317,8 +1299,7 @@
           >
         </div>
       </article>{/each}{#if !decks.length}<div class="empty">
-        <p class="index-label">{t('An open shelf', 'Rak yang menunggu')}</p>
-        <h2>{t('What will you learn next?', 'Apa yang ingin kamu pelajari?')}</h2>
+        <h2>{t('No decks yet', 'Belum ada deck')}</h2>
         <p>
           {t(
             'Bring an Anki deck to start your collection.',
@@ -1356,10 +1337,8 @@
         disabled={busy}
         onclick={closeModal}><X size={21} /></button
       >
-      {#if modal === 'import'}<p class="index-label">
-          {t('Bring your curiosity', 'Bawa rasa ingin tahumu')}
-        </p>
-        <h2 id="modal-title">{t('A new chapter.', 'Bab yang baru.')}</h2>
+      {#if modal === 'import'}
+        <h2 id="modal-title">{t('Import a deck', 'Impor deck')}</h2>
         <p>
           {t(
             'Import an Anki .apkg file, including its images and audio.',
@@ -1413,10 +1392,8 @@
             </p>{/if}<button class="button primary full" disabled={!file || busy} onclick={doImport}
             >{busy ? t('Importing…', 'Mengimpor…') : t('Import deck', 'Impor deck')}</button
           >{/if}
-      {:else if modal === 'edit' && editing}<p class="index-label">
-          {t('Note', 'Catatan')} / {editing.model.name}
-        </p>
-        <h2 id="modal-title">{t('Make it clearer.', 'Buat lebih jelas.')}</h2>
+      {:else if modal === 'edit' && editing}
+        <h2 id="modal-title">{t('Edit note', 'Edit catatan')}</h2>
         <p>
           {t(
             'Changes apply to every card using this note. Fields may contain HTML and media references.',
@@ -1437,9 +1414,7 @@
             >{t('Save note', 'Simpan catatan')}</button
           >
         </form>
-      {:else if modal === 'preview' && inspect}<p class="index-label">
-          {t('Card preview', 'Pratinjau kartu')}
-        </p>
+      {:else if modal === 'preview' && inspect}
         <h2 id="modal-title">{inspect.model.name}</h2>
         <div class="preview-frame"><Flashcard card={inspect} answer={revealed} /></div>
         <button class="button secondary full" onclick={() => (revealed = !revealed)}

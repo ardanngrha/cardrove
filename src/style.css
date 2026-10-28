@@ -224,11 +224,6 @@ label small {
 .full {
   width: 100%;
 }
-.index-label {
-  font-size: 12px;
-  color: var(--muted);
-  margin-bottom: 14px;
-}
 .muted,
 .fine-print {
   color: var(--muted);
@@ -316,7 +311,7 @@ label small {
   font:
     400 clamp(42px, 9vw, 62px)/1.05 Georgia,
     serif;
-  letter-spacing: -1.8px;
+  letter-spacing: -0.03em;
   margin-bottom: 24px;
 }
 .entry-title h1 em {
@@ -347,7 +342,7 @@ label small {
   letter-spacing: -0.8px;
   margin-bottom: 18px;
 }
-.entry-form-inner > p:not(.index-label) {
+.entry-form-inner > p {
   color: var(--muted);
   font-size: 14px;
 }
@@ -443,7 +438,7 @@ label small {
     serif;
   letter-spacing: -1px;
 }
-.page-heading p:not(.index-label) {
+.page-heading p {
   color: var(--muted);
   font-size: 14px;
   margin-top: 14px;
@@ -456,25 +451,18 @@ label small {
   display: flex;
   flex-direction: column;
   gap: 26px;
-  border-top: 2px solid var(--ink);
+  border-top: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
   padding: 26px 0 24px;
 }
-.session-copy > .index-label {
-  margin-bottom: 20px;
-}
 .session-copy h2 {
   font:
-    400 clamp(38px, 9vw, 58px)/1.06 Georgia,
+    400 clamp(32px, 7vw, 44px)/1.12 Georgia,
     serif;
-  letter-spacing: -1.5px;
+  letter-spacing: -0.025em;
   margin-bottom: 22px;
 }
-.session-copy h2 em {
-  color: var(--accent);
-  font-weight: 400;
-}
-.session-copy > p:not(.index-label) {
+.session-copy > p {
   color: var(--muted);
   max-width: 365px;
   font-size: 14px;
@@ -503,9 +491,6 @@ label small {
     serif;
   font-variant-numeric: tabular-nums;
 }
-.session-index > p {
-  display: none;
-}
 .daily-ledger {
   display: grid;
   grid-template-columns: 1.15fr 1fr 1fr;
@@ -524,7 +509,9 @@ label small {
   margin-bottom: 12px;
 }
 .daily-ledger strong {
-  display: block;
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
   font-size: 23px;
   font-weight: 500;
   font-variant-numeric: tabular-nums;
@@ -571,22 +558,14 @@ progress::-moz-progress-bar {
 }
 .deck-row {
   display: grid;
-  grid-template-columns: 25px minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr) auto;
   gap: 16px 14px;
   padding: 23px 0;
   border-top: 1px solid var(--line);
   align-items: center;
 }
-.deck-index {
-  align-self: start;
-  padding-top: 4px;
-  color: var(--accent);
-  font:
-    italic 17px Georgia,
-    serif;
-}
 .deck-name {
-  grid-column: 2 / -1;
+  grid-column: 1 / -1;
   min-width: 0;
 }
 .deck-name h3 {
@@ -606,7 +585,7 @@ progress::-moz-progress-bar {
   display: flex;
   gap: 6px;
   align-items: baseline;
-  grid-column: 2;
+  grid-column: 1;
   font-size: 13px;
 }
 .deck-count strong {
@@ -617,14 +596,14 @@ progress::-moz-progress-bar {
   font-size: 12px;
 }
 .deck-count + .deck-count {
-  grid-column: 2;
+  grid-column: 1;
   margin-top: -14px;
 }
 .deck-actions {
   display: flex;
   align-items: center;
   gap: 12px;
-  grid-column: 3;
+  grid-column: 2;
   grid-row: 2 / 4;
 }
 .deck-actions .text-button {
@@ -634,17 +613,6 @@ progress::-moz-progress-bar {
   font-size: 12px;
   padding: 10px 12px;
   gap: 8px;
-}
-.workspace-foot {
-  border-top: 1px solid var(--line);
-  margin-top: 30px;
-  padding-top: 18px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  justify-content: space-between;
-  font-size: 11px;
-  color: var(--muted);
 }
 .empty {
   padding: 45px 10px;
@@ -825,7 +793,7 @@ kbd {
     serif;
   margin-bottom: 24px;
 }
-.session-done > p:not(.index-label) {
+.session-done > p {
   color: var(--muted);
   font-size: 14px;
   margin-bottom: 14px;
@@ -931,7 +899,7 @@ kbd {
 .progress-ledger {
   display: grid;
   grid-template-columns: 1fr;
-  border-top: 2px solid var(--ink);
+  border-top: 1px solid var(--line);
   margin-bottom: 38px;
 }
 .progress-ledger > div {
@@ -1110,9 +1078,6 @@ summary {
   right: 10px;
   top: 8px;
 }
-.modal > .index-label {
-  padding-right: 28px;
-}
 .modal h2 {
   font:
     400 34px/1.1 Georgia,
@@ -1120,7 +1085,7 @@ summary {
   letter-spacing: -0.7px;
   margin-bottom: 18px;
 }
-.modal > p:not(.index-label) {
+.modal > p {
   color: var(--muted);
   font-size: 14px;
   margin-bottom: 24px;
@@ -1292,7 +1257,7 @@ summary {
     padding: 36px 0;
   }
   .session-copy h2 {
-    font-size: 48px;
+    font-size: 40px;
   }
   .session-index {
     display: flex;
@@ -1306,11 +1271,6 @@ summary {
   }
   .session-index strong {
     font-size: 52px;
-  }
-  .session-index > p {
-    display: block;
-    color: var(--muted);
-    font-size: 11px;
   }
   .daily-ledger {
     gap: 30px;
@@ -1327,7 +1287,7 @@ summary {
     font-size: 13px;
   }
   .deck-row {
-    grid-template-columns: 25px minmax(0, 1fr) 42px 42px auto;
+    grid-template-columns: minmax(0, 1fr) 42px 42px auto;
     gap: 20px;
     padding: 26px 0;
   }
@@ -1489,7 +1449,7 @@ summary {
     padding: 28px 48px;
   }
   .rail {
-    width: 240px;
+    width: 216px;
     padding: 36px 25px 25px;
   }
   .rail > .wordmark {
@@ -1498,13 +1458,13 @@ summary {
   }
   .rail-caption {
     display: block;
-    margin-top: 50px;
+    margin-top: 36px;
     font-size: 11px;
     color: var(--muted);
   }
   .rail nav {
-    gap: 7px;
-    margin-top: 18px;
+    gap: 5px;
+    margin-top: 14px;
   }
   .rail nav button {
     flex-direction: row;
@@ -1523,15 +1483,6 @@ summary {
     display: block;
     margin-top: auto;
     padding-top: 40px;
-  }
-  .rail-note {
-    font:
-      400 21px/1.4 Georgia,
-      serif;
-    padding: 0 10px 30px;
-  }
-  .rail-note em {
-    color: var(--muted);
   }
   .profile {
     position: relative;
@@ -1556,26 +1507,26 @@ summary {
     top: 16px;
   }
   .workspace {
-    margin-left: 240px;
+    margin-left: 216px;
   }
   .topbar {
     padding: 18px 48px;
   }
   .workspace > main {
-    padding: 44px 48px 50px;
+    padding: 36px 48px 50px;
   }
   .page-heading h1 {
-    font-size: 42px;
+    font-size: 36px;
   }
   .daily-spread {
     grid-template-columns: minmax(0, 1fr) 220px;
-    padding: 44px 0;
-    gap: 50px;
+    padding: 36px 0;
+    gap: 44px;
   }
   .session-copy h2 {
-    font-size: clamp(54px, 4.2vw, 65px);
+    font-size: clamp(38px, 3.2vw, 48px);
   }
-  .session-copy > p:not(.index-label) {
+  .session-copy > p {
     max-width: 390px;
     font-size: 15px;
   }
@@ -1587,7 +1538,7 @@ summary {
     font-size: 64px;
   }
   .deck-row {
-    grid-template-columns: 35px minmax(0, 1fr) 55px 55px auto;
+    grid-template-columns: minmax(0, 1fr) 55px 55px auto;
     gap: 24px;
   }
   .deck-actions .text-button {
@@ -1677,4 +1628,33 @@ summary {
   align-items: center;
   gap: 0.4rem;
   text-underline-offset: 0.2em;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--paper);
+}
+:root {
+  scrollbar-color: var(--line) var(--ground);
+}
+input,
+textarea {
+  caret-color: var(--accent);
+}
+:is(.daily-ledger, .progress-ledger, .deck-count, .nav-count, .activity-data) {
+  font-variant-numeric: tabular-nums;
+}
+.rail nav button {
+  transition:
+    background 160ms ease-out,
+    color 160ms ease-out;
+}
+.rail nav button:hover:not([aria-current='page']) {
+  background: var(--soft);
+  color: var(--ink);
+}
+@media (min-width: 740px) {
+  .session-copy > p {
+    max-width: 44ch;
+  }
 }

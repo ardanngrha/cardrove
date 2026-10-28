@@ -7,100 +7,117 @@ import { brand, link } from '../config';
 
 <Base>
   <main id="content">
-    <section class="opening">
-      <div class="opening-margin">
-        <span>01 / A daily practice</span><span>Personal, by design</span>
-      </div>
+    <section class="opening" aria-labelledby="opening-title">
       <div class="opening-spread">
         <div class="opening-copy">
-          <h1>Make room<br />for <em>what stays.</em></h1>
+          <h1 id="opening-title">Your decks.<br />A daily <em>practice.</em></h1>
           <p>
-            Your Anki decks, a quieter place to study. Return to what you’re learning, wherever the
-            day takes you.
+            Flashcards for the things you want to remember. Bring your Anki decks, review a little
+            each day, and keep your collection on infrastructure you control.
           </p>
-          <a class="button primary" href={link('docs/self-host/')}
-            >Build your study space <span aria-hidden="true">→</span></a
-          >
-          <p class="opening-detail">Open source. Self-hosted. For any subject.</p>
+          <div class="opening-actions">
+            <a class="button primary" href={link('docs/self-host/')}>Set up Cardrove</a>
+            <a class="text-link" href="#practice">Try a card first</a>
+          </div>
+          <p class="opening-detail">Open source · Self-hosted · Spaced repetition</p>
         </div>
         <FeatureFilm />
       </div>
-      <div class="opening-note">
-        <span>Bring your decks.<br />Keep your rhythm.</span><a href={link('docs/studying/')}
-          >How a review works <span aria-hidden="true">↗</span></a>
-      </div>
     </section>
-    <div class="practice-section" data-reveal>
+
+    <section class="practice-section" id="practice" aria-labelledby="practice-title">
       <div class="practice-intro">
-        <p class="index-label">02 / The art of returning</p><h2>
-          Not everything<br />needs <em>more.</em><br />Some things<br />need <em>again.</em>
-        </h2><p>
-          A question. A moment to remember. An answer. Rate your recall, and FSRS schedules the next
-          review.
-        </p><p>
-          Languages, science, history, the things you want to keep. There’s room for all of them.
+        <h2 id="practice-title">Before you look,<br /><em>try to remember.</em></h2>
+        <p>
+          Read the question. Recall what you can, then reveal the answer. In Cardrove, you rate how
+          well you remembered; FSRS uses that rating to schedule your next review.
         </p>
-      </div><CardDemo />
-    </div>
-    <section class="ownership-section" data-reveal>
-      <div>
-        <p class="index-label">03 / Yours to keep</p><h2>
-          A personal library.<br /><em>With your name on it.</em>
-        </h2>
-      </div><div class="ownership-copy">
+        <a class="text-link" href={link('docs/studying/')}>How studying works</a>
+      </div>
+      <CardDemo />
+    </section>
+
+    <section class="ownership-section" aria-labelledby="ownership-title">
+      <div><h2 id="ownership-title">A collection<br /><em>of your own.</em></h2></div>
+      <div class="ownership-copy">
         <p class="large-copy">
-          Your own installation. Your own collection. One shared learning history across the devices
-          you connect.
-        </p><p>
-          {brand} is software you run for yourself. Clone the source, choose a local server or Cloudflare
-          Pages with Supabase, then import the decks you already have.
-        </p><a class="text-link" href={link('docs/architecture/')}
-          >See how it fits together <span aria-hidden="true">↗</span></a>
-      </div><div class="ownership-ledger">
+          Run {brand} for yourself. Connect your devices to one collection and one learning history.
+        </p>
+        <p>
+          Start with a local server, or host it online with Cloudflare Pages and Supabase. Each
+          installation belongs to one owner.
+        </p>
+        <a class="text-link" href={link('docs/architecture/')}>How it fits together</a>
+      </div>
+      <dl class="ownership-ledger">
         <div>
-          <span>Bring along</span><strong>Anki .apkg</strong><p>
-            Basic cards, simple cloze, images, audio, and nested decks.
-          </p>
-        </div><div>
-          <span>Keep in reach</span><strong>Phone & computer</strong><p>
-            A browser is all you need. Cloud study requires a connection.
-          </p>
-        </div><div>
-          <span>Take with you</span><strong>Decks & progress</strong><p>
-            Download a cloud backup with your collection and media.
-          </p>
+          <dt>Anki decks, brought along</dt>
+          <dd>Import supported .apkg files with images, audio, simple cloze, and nested decks.</dd>
         </div>
-      </div>
+        <div>
+          <dt>A browser on either screen</dt>
+          <dd>Study on your phone or computer. Cloud study needs an internet connection.</dd>
+        </div>
+        <div>
+          <dt>A backup you can download</dt>
+          <dd>Export your cloud collection, progress, and media to keep an independent copy.</dd>
+        </div>
+      </dl>
     </section>
-    <section class="handbook-section" data-reveal>
+
+    <section class="handbook-section" aria-labelledby="handbook-title">
       <div>
-        <p class="index-label">04 / Leave the door open</p><h2>
-          Start small.<br /><em>Make it yours.</em>
-        </h2><p>
-          Run it locally first, or give it a home online.<br />The handbook walks through both.
-        </p><a class="button primary" href={link('docs/')}
-          >Open the handbook <span aria-hidden="true">→</span></a>
-      </div><div class="chapter-list">
-        <a href={link('docs/self-host/')}
-          ><span>01</span><div>
-            <h3>Host your own</h3><p>Set up your installation, step by step.</p>
-          </div><span aria-hidden="true">↗</span></a
-        ><a href={link('docs/compatibility/')}
-          ><span>02</span><div>
-            <h3>Bring the right decks</h3><p>Check compatibility before you import.</p>
-          </div><span aria-hidden="true">↗</span></a
-        ><a href={link('docs/devices-backups/')}
-          ><span>03</span><div>
-            <h3>Connect & keep a copy</h3><p>Pair devices and back up your collection.</p>
-          </div><span aria-hidden="true">↗</span></a>
+        <h2 id="handbook-title">Make yourself<br /><em>at home.</em></h2>
+        <p>The handbook covers your first installation and the everyday details.</p>
+        <a class="text-link" href={link('docs/')}>Read the handbook</a>
+      </div>
+      <div class="chapter-list">
+        <a href={link('docs/self-host/')}>
+          <div><h3>Set up your installation</h3><p>Choose a local server or a cloud setup.</p></div>
+          <svg
+            viewBox="0 0 24 24"
+            width="20"
+            height="20"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"></path></svg
+          >
+        </a>
+        <a href={link('docs/compatibility/')}>
+          <div><h3>Check your decks</h3><p>Supported Anki features and current limits.</p></div>
+          <svg
+            viewBox="0 0 24 24"
+            width="20"
+            height="20"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"></path></svg
+          >
+        </a>
+        <a href={link('docs/devices-backups/')}>
+          <div>
+            <h3>Connect devices & back up</h3><p>Bring another screen. Keep a copy of your work.</p>
+          </div>
+          <svg
+            viewBox="0 0 24 24"
+            width="20"
+            height="20"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"></path></svg
+          >
+        </a>
       </div>
     </section>
-    <section class="honest-note">
-      <span>One thing to know</span><p>
-        This is an independent study app. It imports supported Anki decks, but does not sync with
-        AnkiWeb or reproduce every Anki feature. <a href={link('docs/compatibility/')}
-          >Read the current limits.</a>
+    <aside class="honest-note">
+      <span>Before you import</span>
+      <p>
+        Cardrove imports supported Anki decks. It does not sync with AnkiWeb or support every Anki
+        feature. <a href={link('docs/compatibility/')}>Check compatibility.</a>
       </p>
-    </section>
+    </aside>
   </main>
 </Base>
